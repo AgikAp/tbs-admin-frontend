@@ -11,7 +11,7 @@ export default function MainLayout() {
       <div className='fixed min-w-full min-h-full text-light-1'>
         <div className='grid grid-cols-12'>
           <Sidenav />
-          <div className='col-span-12 xl:col-span-10 px-5 py-10 h-lvh overflow-y-auto'>
+          <div className='col-span-12 lg:col-span-10 px-5 py-10 h-lvh overflow-y-auto'>
             <Outlet />
           </div>
         </div>

@@ -37,7 +37,7 @@ export default function Sidenav() {
           </label>
         </div>
       </div>
-      <div className="xl:hidden drawer">
+      <div className="xl:hidden drawer z-[999]">
         <input id="my-drawer-2" type="checkbox" className="drawer-toggle" />
         <div className="drawer-side">
           <label htmlFor="my-drawer-2" aria-label="close sidebar" className="drawer-overlay"></label>

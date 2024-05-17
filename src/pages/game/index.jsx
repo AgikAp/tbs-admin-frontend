@@ -10,7 +10,7 @@ export default function GamePage() {
 
   const additionalGameList = (
     <>
-      <button className='btn bg-primary-2 hover:bg-primary-1 text-light-0 font-semibold px-5 xl:px-7 text-[14px]' onClick={() => navigate('/game/create')}>
+      <button className='btn bg-primary-2 hover:bg-primary-1 text-light-0 font-semibold px-5 lg:px-7 text-[14px]' onClick={() => navigate('/game/create')}>
         <FontAwesomeIcon icon={faPlus} />
         Add New
       </button>

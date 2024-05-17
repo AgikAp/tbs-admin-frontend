@@ -1,175 +1,147 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import PageHeader from '../../components/pageheader'
 import Section from '../../components/sections'
 import InputFile from '../../components/inputfile'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faPlus, faTimes } from '@fortawesome/free-solid-svg-icons'
+import { faCancel, faPlus, faSave, faSpinner, faTimes } from '@fortawesome/free-solid-svg-icons'
+import GameInformationField from './gameinformationfield'
+import { faEdit } from '@fortawesome/free-regular-svg-icons/faEdit'
+import GameCustomField from './gamecustomfield'
+import { POST_CreateGame } from '../../fetchs/game'
+import { useNavigate } from 'react-router-dom'
+import { POST_UploadImage } from '../../fetchs/image'
+import { errorWriter } from '../../utils/errorwriter'
 
-export default function GameDetailPage() {
+export default function GameDetailPage({ isCreate }) {
+  const navigate = useNavigate()
+  const initialEditMode = isCreate
+
+  const [images, setImages] = useState({})
+  const [editMode, setEditMode] = useState(initialEditMode)
+  const [loading, setLoading] = useState(false)
+  const [err, setErr] = useState(null)
+  const [payload, setPayload] = useState({
+    status: 'inactive',
+    fields: []
+  })
+
+  useEffect(() => {
+    console.log(payload);
+  }, [payload])
 
   const additionalGameList = (
     <>
-      <button className='btn bg-primary-2 hover:bg-primary-1 text-light-0 font-semibold px-5 xl:px-7 text-[14px]' onClick={() => ''}>
+      <button className='btn bg-primary-2 hover:bg-primary-1 text-light-0 font-semibold px-5 lg:px-7 text-[14px]' onClick={() => {
+        const tempPayload = { ...payload }
+        tempPayload.fields.push({})
+        setPayload(tempPayload)
+      }}>
         <FontAwesomeIcon icon={faPlus} />
         Add Field
       </button>
     </>
   )
 
+  const handleOnSubmit = async () => {
+    const tempPayload = {...payload}
+    if (images?.image_file) {
+      try {
+        tempPayload.image = await POST_UploadImage(images?.image_file, setLoading, setErr)
+      } catch (error) {
+        errorWriter(e, setErr)
+        return
+      }
+      
+    }
+
+    if (images?.item_image_file) {
+      try {
+        tempPayload.item_image = await POST_UploadImage(images?.item_image_file, setLoading, setErr)
+      } catch (error) {
+        errorWriter(e, setErr)
+        return
+      }
+    }
+
+    let response = {}
+    try {
+      response = await POST_CreateGame(tempPayload, setLoading, setErr)
+      setPayload(response)
+    } catch (error) {
+      errorWriter(e, setErr)
+      return
+    }
+
+    navigate('/game/' + response?.id)
+  }
+
+  const changeImage = (e) => {
+    const selectedFile = e.target.files[0]
+    const tempImages = { ...images }
+    tempImages[e.target.name] = URL.createObjectURL(selectedFile)
+    tempImages[e.target.name + '_file'] = selectedFile
+    setImages(tempImages)
+  }
+
   return (
-    <div>
-      <PageHeader page={'Games Detail Page'} />
-      <div className='py-10'>
-        <div className='grid grid-cols-1 xl:grid-cols-3 gap-4'>
-          <Section title={'GAME IMAGE'}>
-            <div className='grid grid-cols-4'>
-              <div className='col-span-2'>
-                <span className="label-text">Game Image</span>
-                <InputFile className={'max-w-[123.5px] min-h-[162.5px] xl:max-w-[190px] xl:min-h-[250px]'} />
-              </div>
-              <div className='col-span-2'>
-                <span className="label-text">Item Image</span>
-                <InputFile className={'max-w-[100px] min-h-[100px]'} />
-              </div>
-            </div>
-          </Section>
-          <div className='xl:col-span-2'>
-            <Section title={'GAME INFORMATION'}>
-              <div className='grid grid-cols-1 gap-8'>
-                <div>
-                  <label className="form-control min-w-full max-w-xs">
-                    <div className="label">
-                      <span className="label-text">Name</span>
-                    </div>
-                    <input type="text" className="input input-bordered min-w-full max-w-xs" />
-                  </label>
-                  <label className="form-control min-w-full max-w-xs">
-                    <div className="label">
-                      <span className="label-text">Developer</span>
-                    </div>
-                    <input type="text" className="input input-bordered min-w-full max-w-xs" />
-                  </label>
-                  <label className="form-control min-w-full max-w-xs">
-                    <div className="label">
-                      <span className="label-text">Description</span>
-                    </div>
-                    <textarea type="text" className="textarea textarea-bordered min-w-full max-w-xs" />
-                  </label>
-                  <div className="form-control w-fit my-4">
-                    <label className="label cursor-pointer">
-                      <input type="checkbox" defaultChecked className="checkbox" />
-                      <span className="label-text pl-5">Game Active</span>
-                    </label>
-                  </div>
+    <>
+      {err &&
+        <div role="alert" className="alert alert-error mb-5">
+          <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+          <span>{err}</span>
+        </div>}
+      <form onSubmit={(e) => e.preventDefault()}>
+        <div className='flex justify-between'>
+          <PageHeader page={'Games Detail Page'} />
+          <div className='grid grid-cols-1 lg:grid-cols-2 gap-4'>
+            <button className={`btn bg-primary-2 hover:bg-primary-1 text-light-0 font-semibold px-5 lg:px-7 text-[14px] ${editMode ? 'hidden' : 'col-start-2'}`} onClick={() => setEditMode(!editMode)}>
+              <FontAwesomeIcon icon={faEdit} />
+              Edit
+            </button>
+            <button className={`btn btn-sm lg:btn-md bg-primary-2 hover:bg-primary-1 text-light-0 font-semibold px-5 lg:px-7 text-[14px] ${!editMode && 'hidden'}`} onClick={() => {
+              isCreate ? navigate(-1) : setEditMode(!editMode)
+            }} disabled={loading} >
+              <FontAwesomeIcon icon={faCancel} />
+              Cancel
+            </button>
+            <button className={`btn btn-sm lg:btn-md bg-primary-2 hover:bg-primary-1 text-light-0 font-semibold px-5 lg:px-7 text-[14px] ${!editMode && 'hidden'}`} onClick={() => handleOnSubmit()} disabled={loading}>
+              {
+                loading ?
+                  <FontAwesomeIcon icon={faSpinner} spin />
+                  :
+                  <FontAwesomeIcon icon={faSave} />
+              }
+              Save
+            </button>
+          </div>
+        </div>
+        <div className='py-10'>
+          <div className='grid grid-cols-1 lg:grid-cols-3 gap-4'>
+            <Section title={'GAME IMAGE'}>
+              <div className='grid grid-cols-4'>
+                <div className='col-span-2'>
+                  <span className="label-text">Game Image</span>
+                  <InputFile editMode={editMode} handleChangeImage={changeImage} image={images?.image ?? ''} name={'image'} className={'max-w-[123.5px] min-h-[162.5px] lg:max-w-[190px] lg:min-h-[250px]'} />
+                </div>
+                <div className='col-span-2'>
+                  <span className="label-text">Item Image</span>
+                  <InputFile editMode={editMode} handleChangeImage={changeImage} image={images?.item_image ?? ''} name={'item_image'} className={'max-w-[100px] min-h-[100px]'} />
                 </div>
               </div>
             </Section>
+            <div className='lg:col-span-2'>
+              <GameInformationField payload={payload} setPayload={setPayload} editMode={editMode} />
+            </div>
+          </div>
+          <div className='my-5'>
+            <Section title={'FIELDS'} additional={additionalGameList}>
+              {payload?.fields?.map((val, i) =>
+                <GameCustomField key={"customfield" + i} payload={payload} setPayload={setPayload} editMode={editMode} index={i} paylaodOnIndex={val ?? {}} />
+              )}
+            </Section>
           </div>
         </div>
-        <div className='my-5'>
-          <Section title={'FIELDS'} additional={additionalGameList}>
-            <div className='flex w-full'>
-              <span className='text-[34px] mr-10 mt-7'>1</span>
-              <div className='grid grid-cols-5 gap-5 w-full'>
-                <label className="form-control min-w-full max-w-xs">
-                  <div className="label">
-                    <span className="label-text">Name</span>
-                  </div>
-                  <input type="text" className="input input-bordered min-w-full max-w-xs" />
-                </label>
-                <label className="form-control min-w-full max-w-xs">
-                  <div className="label">
-                    <span className="label-text">Developer</span>
-                  </div>
-                  <input type="text" className="input input-bordered min-w-full max-w-xs" />
-                </label>
-                <label className="form-control min-w-full max-w-xs">
-                  <div className="label">
-                    <span className="label-text">Type</span>
-                  </div>
-                  <select className="select select-bordered min-w-full max-w-xs">
-                    <option disabled selected>Who shot first?</option>
-                    <option>Han Solo</option>
-                    <option>Greedo</option>
-                  </select>
-                </label>
-                <div className='col-span-2 '>
-                  <div className='grid grid-cols-3 gap-3 items-end'>
-                    <label className="form-control min-w-full max-w-xs">
-                      <div className="label">
-                        <span className="label-text">Enter display</span>
-                      </div>
-                      <input type="text" className="input input-bordered min-w-full max-w-xs" />
-                    </label>
-                    <label className="form-control min-w-full max-w-xs">
-                      <div className="label">
-                        <span className="label-text">Enter value</span>
-                      </div>
-                      <input type="text" className="input input-bordered min-w-full max-w-xs" />
-                    </label>
-                    <label className="form-control min-w-full max-w-xs">
-                      <button className='btn bg-primary-2 hover:bg-primary-1 text-light-0 font-semibold px-5 xl:px-7 text-[14px]' onClick={() => ''}>
-                        <FontAwesomeIcon icon={faPlus} />
-                        Add Options
-                      </button>
-                    </label>
-                  </div>
-                  <div className='py-5 flex flex-wrap gap-2'>
-                    <div className="badge badge-primary badge-outline flex items-center gap-2 py-3 px-3">
-                      primary
-                      <FontAwesomeIcon icon={faTimes} className='cursor-pointer' />
-                    </div>
-                    <div className="badge badge-primary badge-outline flex items-center gap-2 py-3 px-3">
-                      primary
-                      <FontAwesomeIcon icon={faTimes} className='cursor-pointer' />
-                    </div>
-                    <div className="badge badge-primary badge-outline flex items-center gap-2 py-3 px-3">
-                      primary
-                      <FontAwesomeIcon icon={faTimes} className='cursor-pointer' />
-                    </div>
-                    <div className="badge badge-primary badge-outline flex items-center gap-2 py-3 px-3">
-                      primary
-                      <FontAwesomeIcon icon={faTimes} className='cursor-pointer' />
-                    </div>
-                    <div className="badge badge-primary badge-outline flex items-center gap-2 py-3 px-3">
-                      primary
-                      <FontAwesomeIcon icon={faTimes} className='cursor-pointer' />
-                    </div>
-                    <div className="badge badge-primary badge-outline flex items-center gap-2 py-3 px-3">
-                      primary
-                      <FontAwesomeIcon icon={faTimes} className='cursor-pointer' />
-                    </div>
-                    <div className="badge badge-primary badge-outline flex items-center gap-2 py-3 px-3">
-                      primary
-                      <FontAwesomeIcon icon={faTimes} className='cursor-pointer' />
-                    </div>
-                    <div className="badge badge-primary badge-outline flex items-center gap-2 py-3 px-3">
-                      primary
-                      <FontAwesomeIcon icon={faTimes} className='cursor-pointer' />
-                    </div>
-                    <div className="badge badge-primary badge-outline flex items-center gap-2 py-3 px-3">
-                      primary
-                      <FontAwesomeIcon icon={faTimes} className='cursor-pointer' />
-                    </div>
-                    <div className="badge badge-primary badge-outline flex items-center gap-2 py-3 px-3">
-                      primary
-                      <FontAwesomeIcon icon={faTimes} className='cursor-pointer' />
-                    </div>
-                    <div className="badge badge-primary badge-outline flex items-center gap-2 py-3 px-3">
-                      primary
-                      <FontAwesomeIcon icon={faTimes} className='cursor-pointer' />
-                    </div>
-                    <div className="badge badge-primary badge-outline flex items-center gap-2 py-3 px-3">
-                      primary
-                      <FontAwesomeIcon icon={faTimes} className='cursor-pointer' />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </Section>
-        </div>
-      </div>
-    </div>
+      </form>
+    </>
   )
 }
