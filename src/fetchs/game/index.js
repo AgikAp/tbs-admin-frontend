@@ -25,3 +25,15 @@ export const GET_GetGameByID = async (id, setLoading) => {
   }
     
 }
+
+export const GET_GetGameList = async (setLoading) => {
+  setLoading(true)
+  try {
+    const response = await instance.get('/game')
+    setLoading(false)
+    return response?.data?.data
+  } catch (e) {
+    setLoading(false)
+    throw e
+  }
+}

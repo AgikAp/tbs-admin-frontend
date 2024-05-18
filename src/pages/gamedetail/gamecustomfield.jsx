@@ -59,11 +59,11 @@ export default function GameCustomField({ payload, setPayload, editMode, index, 
 
   return (
     <>
-      <div className='flex my-6'>
+      <div className='flex my-6 py-5 border-b-2 border-b-dark-3'>
         <span className='text-[34px] mr-10 mt-7 hidden lg:block'>{index + 1}</span>
         <div className='relative w-full'>
           <div className={`absolute right-0 lg:left-0 mr-2 -mt-3 lg:-mr-10 lg:-mt-4 cursor-pointer text-dark-4 hover:text-dark-6 ${!editMode && 'hidden'}`} onClick={() => removeField()}>
-            Remove Field {index} <FontAwesomeIcon icon={faTimesCircle} />
+            Remove Field {index + 1} <FontAwesomeIcon icon={faTimesCircle} />
           </div>
           <div className='grid grid-cols-1 lg:grid-cols-6 gap-5'>
             <label className="form-control">
