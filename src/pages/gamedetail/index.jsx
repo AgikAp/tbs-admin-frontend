@@ -7,14 +7,15 @@ import { faCancel, faPlus, faSave, faSpinner, faTimes } from '@fortawesome/free-
 import GameInformationField from './gameinformationfield'
 import { faEdit } from '@fortawesome/free-regular-svg-icons/faEdit'
 import GameCustomField from './gamecustomfield'
-import { POST_CreateGame } from '../../fetchs/game'
-import { useNavigate } from 'react-router-dom'
+import { GET_GetGameByID, POST_CreateGame } from '../../fetchs/game'
+import { useNavigate, useParams } from 'react-router-dom'
 import { POST_UploadImage } from '../../fetchs/image'
 import { errorWriter } from '../../utils/errorwriter'
 
 export default function GameDetailPage({ isCreate }) {
   const navigate = useNavigate()
   const initialEditMode = isCreate
+  const {id} = useParams()
 
   const [images, setImages] = useState({})
   const [editMode, setEditMode] = useState(initialEditMode)
@@ -26,8 +27,27 @@ export default function GameDetailPage({ isCreate }) {
   })
 
   useEffect(() => {
-    console.log(payload);
-  }, [payload])
+    const fetch = async () => {
+      try {
+        const response = await GET_GetGameByID(id, setLoading)
+        const tempImages = {...images}
+        tempImages.image = response.image
+        tempImages.item_image = response.item_image
+        setImages(tempImages)
+        setPayload(response)
+      } catch (e) {
+        errorWriter(e, setErr)
+        return
+      }
+    }
+    if (!isCreate) {
+      fetch()
+    }
+  }, [isCreate])
+
+  useEffect(() => {
+    console.log(images);
+  }, [images])
 
   const additionalGameList = (
     <>
@@ -35,7 +55,7 @@ export default function GameDetailPage({ isCreate }) {
         const tempPayload = { ...payload }
         tempPayload.fields.push({})
         setPayload(tempPayload)
-      }}>
+      }} disabled={!editMode}>
         <FontAwesomeIcon icon={faPlus} />
         Add Field
       </button>
@@ -43,21 +63,20 @@ export default function GameDetailPage({ isCreate }) {
   )
 
   const handleOnSubmit = async () => {
-    const tempPayload = {...payload}
+    const tempPayload = { ...payload }
     if (images?.image_file) {
       try {
-        tempPayload.image = await POST_UploadImage(images?.image_file, setLoading, setErr)
-      } catch (error) {
+        tempPayload.image = await POST_UploadImage(images?.image_file, setLoading)
+      } catch (e) {
         errorWriter(e, setErr)
         return
       }
-      
     }
 
     if (images?.item_image_file) {
       try {
-        tempPayload.item_image = await POST_UploadImage(images?.item_image_file, setLoading, setErr)
-      } catch (error) {
+        tempPayload.item_image = await POST_UploadImage(images?.item_image_file, setLoading)
+      } catch (e) {
         errorWriter(e, setErr)
         return
       }
@@ -65,9 +84,9 @@ export default function GameDetailPage({ isCreate }) {
 
     let response = {}
     try {
-      response = await POST_CreateGame(tempPayload, setLoading, setErr)
+      response = await POST_CreateGame(tempPayload, setLoading)
       setPayload(response)
-    } catch (error) {
+    } catch (e) {
       errorWriter(e, setErr)
       return
     }

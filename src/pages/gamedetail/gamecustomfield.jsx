@@ -8,7 +8,7 @@ export default function GameCustomField({ payload, setPayload, editMode, index, 
 
   const handleChange = (e) => {
     const tempField = payload?.fields
-    tempField[index] = { ...paylaodOnIndex, [e.target.name]: e.target.value }
+    tempField[index] = { ...paylaodOnIndex, priority: index, [e.target.name]: e.target.value }
     setPayload({
       ...payload, fields: tempField
     })
@@ -62,7 +62,7 @@ export default function GameCustomField({ payload, setPayload, editMode, index, 
       <div className='flex my-6'>
         <span className='text-[34px] mr-10 mt-7 hidden lg:block'>{index + 1}</span>
         <div className='relative w-full'>
-          <div className='absolute right-0 lg:left-0 mr-2 -mt-3 lg:-mr-10 lg:-mt-4 cursor-pointer text-dark-4 hover:text-dark-6' onClick={() => removeField()}>
+          <div className={`absolute right-0 lg:left-0 mr-2 -mt-3 lg:-mr-10 lg:-mt-4 cursor-pointer text-dark-4 hover:text-dark-6 ${!editMode && 'hidden'}`} onClick={() => removeField()}>
             Remove Field {index} <FontAwesomeIcon icon={faTimesCircle} />
           </div>
           <div className='grid grid-cols-1 lg:grid-cols-6 gap-5'>
@@ -111,7 +111,7 @@ export default function GameCustomField({ payload, setPayload, editMode, index, 
                     <input type="text" className="input input-bordered" name='value' value={option?.value ?? ''} onChange={handleChangeOption} disabled={!editMode} />
                   </label>
                   <label className="form-control">
-                    <button className='btn bg-primary-2 hover:bg-primary-1 text-light-0 font-semibold px-5 lg:px-7 text-[14px]' onClick={handleAddOption}>
+                    <button className='btn bg-primary-2 hover:bg-primary-1 text-light-0 font-semibold px-5 lg:px-7 text-[14px]' onClick={handleAddOption} disabled={!editMode}>
                       <FontAwesomeIcon icon={faPlus} disabled={!editMode} />
                       Add Options
                     </button>
@@ -121,7 +121,7 @@ export default function GameCustomField({ payload, setPayload, editMode, index, 
                   {paylaodOnIndex?.options?.map((val, i) => 
                     <div key={val + i} className="badge badge-primary badge-outline flex items-center gap-2 py-3 px-3">
                       {val.label} : {val.value}
-                      <FontAwesomeIcon icon={faTimes} className='cursor-pointer' onClick={() => handleRemoveOption(i)} />
+                      <FontAwesomeIcon icon={faTimes} className='cursor-pointer' onClick={() => editMode && handleRemoveOption(i)} />
                     </div>
                   )}
                 </div>
