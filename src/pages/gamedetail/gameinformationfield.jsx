@@ -37,7 +37,7 @@ export default function GameInformationField({payload, setPayload, editMode}) {
             <div className="form-control w-fit my-4">
               <div>
                 <label className="label cursor-pointer">
-                  <input type="checkbox" className="checkbox" value={payload?.status ?? ''} name='status' onChange={(e) => {
+                  <input type="checkbox" className="checkbox" value={payload?.status ?? ''} checked={payload?.status === 'active'} name='status' onChange={(e) => {
                     e.target.checked ? e.target.value = 'active' : e.target.value = 'inactive'
                     handleChange(e)
                   }} disabled={!editMode} />
@@ -46,7 +46,7 @@ export default function GameInformationField({payload, setPayload, editMode}) {
               </div>
               <div>
                 <label className="label cursor-pointer">
-                  <input type="checkbox" className="checkbox" value={payload?.checking_nickname ?? ''} name='checking_nickname' onChange={handleChangeCheckbox} disabled={!editMode} />
+                  <input type="checkbox" className="checkbox" value={payload?.checking_nickname ?? ''} checked={payload?.checking_nickname ?? false} name='checking_nickname' onChange={handleChangeCheckbox} disabled={!editMode} />
                   <span className="label-text pl-5">Check Nickname</span>
                 </label>
               </div>
