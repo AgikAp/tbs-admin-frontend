@@ -3,6 +3,7 @@ import MainLayout from "./layouts/MainLayout";
 import HomePage from "./pages/home";
 import GamePage from "./pages/game";
 import GameDetailPage from "./pages/gamedetail";
+import ItemPage from "./pages/item";
 
 export default function App() {
   return (
@@ -15,6 +16,7 @@ export default function App() {
               <Route path='/game' element={<GamePage />} />
               <Route path='/game/create' element={<GameDetailPage isCreate={true} />} />
               <Route path='/game/:id' element={<GameDetailPage isCreate={false} />} />
+              <Route path="/item" element={<ItemPage />} />
             </Route>
           </Routes>
         </BrowserRouter>

@@ -1,4 +1,4 @@
-import { faGamepad, faHome } from "@fortawesome/free-solid-svg-icons";
+import { faBoxesStacked, faGamepad, faHome } from "@fortawesome/free-solid-svg-icons";
 
 export const navigationList = [
   {
@@ -15,9 +15,9 @@ export const navigationList = [
         link: '/game'
       },
       {
-        display: 'Payments',
-        icon: faGamepad,
-        link: '/payment'
+        display: 'Items',
+        icon: faBoxesStacked,
+        link: '/item'
       }
     ]
   }
