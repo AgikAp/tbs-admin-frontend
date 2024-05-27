@@ -14,15 +14,15 @@ export default function ItemCardSpecial({ index, specialItem, specialItems, setS
           <div className='pt-3 text-dark-6'>
             <span className='text-[14px]'>Pricing Detail</span>
             <div className='flex gap-5 text-[12px]'>
-              {specialItem.prices.map(val =>
-                <span>{idrFormat(val.price)} <br /> + {val.type === 'percent' ? val.margin + '%' : val.margin} ({val.level})</span>
+              {specialItem.prices.map((val, i) =>
+                <span key={'special_item' + val.eks_code + i} >{idrFormat(val.price)} <br /> + {val.type === 'percent' ? val.margin + '%' : val.margin} ({val.level})</span>
               )}
             </div>
           </div>
           <div className='pt-5'>
             <div className="form-control">
               <label className="label cursor-pointer justify-normal" htmlFor=''>
-                <input type="checkbox" defaultChecked className="checkbox checkbox-xs" checked={specialItem.use_instruction} readOnly />
+                <input type="checkbox" className="checkbox checkbox-xs" checked={specialItem.use_instruction} readOnly />
                 <span className="label-text pl-3">Use instruction</span>
               </label>
             </div>

@@ -3,15 +3,20 @@ import { idrFormat } from '../../utils/currencyFormat'
 import { sortArrayByName, sortArrayByPrice } from '../../utils/sort'
 
 export default function ItemCardExternal({ index, item, editMode, items, setItems, specialItems, setSpecialItems, sortBy }) {
-  const [selected, setSelected] = useState(false)
-
-  useEffect(() => {
+  const getItemIndex = () => {
     let itemIndex = items.findIndex(val => val.eks_code === item.code)
     if (itemIndex === -1) {
       itemIndex = specialItems.findIndex(val => val.eks_code === item.code)
+
     }
 
-    itemIndex === -1 ? setSelected(false) : setSelected(true)
+    return itemIndex
+  }
+
+  const [selected, setSelected] = useState(getItemIndex() === -1 ? false : true)
+
+  useEffect(() => {
+    getItemIndex() === -1 ? setSelected(false) : setSelected(true)
   }, [items])
 
   useEffect(() => {
@@ -59,7 +64,7 @@ export default function ItemCardExternal({ index, item, editMode, items, setItem
         tempItems[itemIndex].eks_code = item.code
         tempItems[itemIndex].name = item.name
         tempItems[itemIndex].status = item.status
-        tempItems[itemIndex].selected = false 
+        tempItems[itemIndex].selected = false
 
         let guest = tempItems[itemIndex].prices.findIndex(val => val.level === 'guest')
         let reseller = tempItems[itemIndex].prices.findIndex(val => val.level === 'reseller')
@@ -111,6 +116,7 @@ export default function ItemCardExternal({ index, item, editMode, items, setItem
         tempItems = sortArrayByPrice(tempItems)
       }
     } else {
+      console.log("ITEM INDEX DELETED", itemIndex);
       if (itemIndex !== -1) {
         tempItems.splice(itemIndex, 1)
       }
