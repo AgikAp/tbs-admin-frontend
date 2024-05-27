@@ -25,3 +25,15 @@ export const GET_ListBanner = async (setLoading) => {
   }
 
 }
+
+export const DELETE_RemoveBanner = async (id, setLoading) => {
+  setLoading(true)
+  try {
+    const response = await instance.delete('/banner/' + id)
+    setLoading(false)
+    return response
+  } catch (e) {
+    setLoading(false)
+    throw e
+  }
+}

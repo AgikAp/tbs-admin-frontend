@@ -6,7 +6,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faEye, faPlus, faSpinner, faTrash, faUpload } from '@fortawesome/free-solid-svg-icons'
 import BannerCard from './bannercard'
 import InputFile from '../../components/inputfile'
-import { GET_ListBanner, POST_CreateOrUpdate } from '../../fetchs/banner'
+import { DELETE_RemoveBanner, GET_ListBanner, POST_CreateOrUpdate } from '../../fetchs/banner'
 import { errorWriter } from '../../utils/errorwriter'
 import { POST_UploadImage } from '../../fetchs/image'
 
@@ -19,18 +19,18 @@ export default function BannerPage() {
 
   const [imagePreview, setImagePreview] = useState('')
 
-  useEffect(() => {
-    const fetchListBanner = async () => {
-      try {
-        const response = await GET_ListBanner(setLoading)
-        console.log(response);
-        setBanners(response.data.data)
-      } catch (e) {
-        errorWriter(e, setErr)
-        return
-      }
+  const fetchListBanner = async () => {
+    try {
+      const response = await GET_ListBanner(setLoading)
+      console.log(response);
+      setBanners(response.data.data)
+    } catch (e) {
+      errorWriter(e, setErr)
+      return
     }
+  }
 
+  useEffect(() => {
     fetchListBanner()
   }, [])
 
@@ -94,6 +94,31 @@ export default function BannerPage() {
     }
   }
 
+  const handleRemoveBanner = async (id, index) => {
+    try {
+      const response = await DELETE_RemoveBanner(id, setLoading)
+      const tempBanner = [...banners]
+      tempBanner.splice(index, 1)
+      response.status === 200 ? setBanners(tempBanner) : setErr('failed deleting banner')
+    } catch (e) {
+      errorWriter(e, setErr)
+    }
+  }
+
+  const handleChangeShowing = async (show, index) => {
+    let banner = banners[index]
+    banner.show = show
+    try {
+      const response = await POST_CreateOrUpdate(banner, setLoading)
+      const tempBanner = [...banners]
+      tempBanner[index] = response.data.data
+      setBanners(tempBanner)
+    } catch (e) {
+      errorWriter(e, setErr)
+      return
+    }
+  }
+
   return (
     <>
       {err &&
@@ -139,8 +164,8 @@ export default function BannerPage() {
       <div className='my-5'>
         <Section title={"Banner List"} additional={additionalBannerList}>
           <div className='grid grid-cols-1 lg:grid-cols-3 gap-4'>
-            {banners.map(val => 
-              <BannerCard key={val.id} preview={previewBanner} banner={val} />
+            {banners.map((val, i) => 
+              <BannerCard key={val.id} preview={previewBanner} index={i} banner={val} removeBanner={handleRemoveBanner} changeShowing={handleChangeShowing} />
             )}
           </div>
         </Section>
