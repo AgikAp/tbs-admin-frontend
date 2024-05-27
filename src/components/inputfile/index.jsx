@@ -1,8 +1,19 @@
 import { faCloudArrowUp } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import React, { useEffect } from 'react'
+import React, { useEffect, useRef } from 'react'
 
 export default function InputFile({className, name, image, handleChangeImage, editMode}) {
+  const fileInputReff = useRef(null)
+
+  const handleFileChange = (e) => {
+    handleChangeImage(e);
+
+    // Reset the file input
+    if (fileInputReff.current) {
+      fileInputReff.current.value = '';
+    }
+  };
+
   return (
     <>
       <label htmlFor={name} className={`flex border-dashed border-2 border-dark-6 rounded-md cursor-pointer ${className}`}>
@@ -17,7 +28,7 @@ export default function InputFile({className, name, image, handleChangeImage, ed
             <span className='block text-[14px]'>Click to upload</span>
           </div>
         </div>
-        <input type="file" name={name} id={name} className='hidden' onChange={handleChangeImage} disabled={!editMode} />
+        <input type="file" name={name} id={name} ref={fileInputReff} className='hidden' onChange={handleFileChange} disabled={!editMode} />
       </label>
     </>
   )
