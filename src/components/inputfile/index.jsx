@@ -20,7 +20,7 @@ export default function InputFile({className, name, image, handleChangeImage, ed
         <div className='relative h-full w-full'>
           <div className={`overflow-hidden ${className}`}>
             {image &&
-              <img src={image} alt="" />
+              <img src={image} alt="" className='' />
             }
           </div>
           <div className={`absolute bg-gradient-to-t from-dark-0 to-transparent py-5 lg:py-7 z-10 w-full text-center bottom-0 ${!editMode && 'hidden'}`}>

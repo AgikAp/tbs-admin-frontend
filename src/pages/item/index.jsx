@@ -158,7 +158,6 @@ export default function ItemPage() {
   }
 
   const changeImage = (e, index) => {
-    console.log("change ", index);
     const selectedFile = e.target.files[0]
     const tempImages = [...specialItems]
     tempImages[index][e.target.name] = URL.createObjectURL(selectedFile)

@@ -4,6 +4,7 @@ import HomePage from "./pages/home";
 import GamePage from "./pages/game";
 import GameDetailPage from "./pages/gamedetail";
 import ItemPage from "./pages/item";
+import BannerPage from "./pages/banner";
 
 export default function App() {
   return (
@@ -17,6 +18,7 @@ export default function App() {
               <Route path='/game/create' element={<GameDetailPage isCreate={true} />} />
               <Route path='/game/:id' element={<GameDetailPage isCreate={false} />} />
               <Route path="/item" element={<ItemPage />} />
+              <Route path="/banner" element={<BannerPage />} />
             </Route>
           </Routes>
         </BrowserRouter>

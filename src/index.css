@@ -63,3 +63,14 @@
   width: 100%;
   height: auto;
 }
+
+.banner-card:hover > .banner-card-action {
+  visibility: visible;
+  opacity: 1;
+}
+
+.banner-card-action {
+  visibility: hidden;
+  opacity: 0;
+  transition: visibility 0s, opacity 0.3s linear;
+}
