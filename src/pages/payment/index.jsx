@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react'
 import PageHeader from '../../components/pageheader'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faAlignRight, faCancel, faPlus, faTimes } from '@fortawesome/free-solid-svg-icons'
+import { faAlignRight, faCancel, faPlus, faTimes, faTrash } from '@fortawesome/free-solid-svg-icons'
 import Section from '../../components/sections'
-import { GET_ListPayment } from '../../fetchs/payment'
+import { GET_ListPayment, POST_CreateOrUpdatePayment } from '../../fetchs/payment'
 import { errorWriter } from '../../utils/errorwriter'
 import PaymentListCard from './paymentlistcard'
 import PaymentField from './paymentfield'
 import { faEdit, faSave } from '@fortawesome/free-regular-svg-icons'
+import { POST_UploadImage } from '../../fetchs/image'
 
 export default function PaymentPage() {
   const [err, setErr] = useState(null)
@@ -34,13 +35,18 @@ export default function PaymentPage() {
     loadPaymentList()
   }, [])
 
+  useEffect(() => {
+    console.log(paymentSelected);
+  }, [paymentSelected])
+
   const handleChangePayment = (val) => {
     setPaymentSelected(val)
     setEditMode(false)
+    setCreateMode(false)
   }
 
   const handleAddNew = () => {
-    setPaymentSelected({})
+    setPaymentSelected({ payment_type: {}, payment_requirements:[] })
     setCreateMode(!createMode)
     setEditMode(!editMode)
     setMobileList(false)
@@ -64,6 +70,28 @@ export default function PaymentPage() {
     setMobileList(true)
   }
 
+  const handleSubmit = async (index) => {
+    const payload = { ...paymentSelected }
+    if (payload?.image_file) {
+      try {
+        payload.image = await POST_UploadImage(payload.image_file, setLoading)
+      } catch (e) {
+        errorWriter(e, setErr)
+        return
+      }
+    }
+
+    try {
+      const response = await POST_CreateOrUpdatePayment(payload, setLoading)
+      setPaymentSelected(response.data.data)
+      loadPaymentList()
+      setCreateMode(false)
+      setEditMode(false)
+    } catch (e) {
+      errorWriter(e, setErr)
+    }
+  }
+
   const additionalPaymentList = (
     <>
       {createMode ?
@@ -73,7 +101,7 @@ export default function PaymentPage() {
               <FontAwesomeIcon icon={faCancel} />
               Cancel
             </button>
-            <button className='btn bg-red-500 hover:bg-red-500 text-light-0 font-semibold px-5 lg:px-7 text-[14px]' onClick={handleAddNew}>
+            <button className='btn bg-red-500 hover:bg-red-500 text-light-0 font-semibold px-5 lg:px-7 text-[14px]' onClick={handleSubmit}>
               <FontAwesomeIcon icon={faSave} />
               Save
             </button>
@@ -81,10 +109,16 @@ export default function PaymentPage() {
         </> :
         <>
           {editMode ?
-            <button className='btn bg-primary-2 hover:bg-primary-1 text-light-0 font-semibold px-5 lg:px-7 text-[14px]' onClick={handleCancelEdit}>
-              <FontAwesomeIcon icon={faCancel} />
-              Cancel
-            </button> :
+            <div className='flex gap-3'>
+              <button className='btn bg-primary-2 hover:bg-primary-1 text-light-0 font-semibold px-5 lg:px-7 text-[14px]' onClick={handleCancelEdit}>
+                <FontAwesomeIcon icon={faCancel} />
+                Cancel
+              </button>
+              <button className='btn bg-red-500 hover:bg-red-500 text-light-0 font-semibold px-5 lg:px-7 text-[14px]' onClick={handleSubmit}>
+                <FontAwesomeIcon icon={faSave} />
+                Save
+              </button>
+            </div> :
             <div className='flex gap-3'>
               <button className='btn bg-primary-2 hover:bg-primary-1 text-light-0 font-semibold px-5 lg:px-7 text-[14px]' onClick={handleAddNew}>
                 <FontAwesomeIcon icon={faPlus} />
@@ -132,7 +166,7 @@ export default function PaymentPage() {
             <div className='col-span-1 lg:col-span-4'>
               <div className={`bg-base-200 px-5 py-3 rounded-lg ${!mobileList ? '' : 'hidden lg:block'}`}>
                 <div className="form-control min-w-full max-w-xs">
-                  <PaymentField editMode={editMode} loading={loading} payment={paymentSelected} />
+                  <PaymentField editMode={editMode} loading={loading} payment={paymentSelected} setPaymentSelected={setPaymentSelected} />
                 </div>
               </div>
             </div>

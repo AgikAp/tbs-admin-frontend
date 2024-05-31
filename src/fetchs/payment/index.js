@@ -12,3 +12,16 @@ export const GET_ListPayment = async (setLoading) => {
   }
 
 }
+
+export const POST_CreateOrUpdatePayment = async (payload, setLoading) => {
+  setLoading(true)
+  try {
+    const response = await instance.post('/payment', payload)
+    setLoading(false)
+    return response
+  } catch (e) {
+    setLoading(false)
+    throw e
+  }
+
+}
