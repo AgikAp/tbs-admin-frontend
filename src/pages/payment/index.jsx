@@ -35,10 +35,6 @@ export default function PaymentPage() {
     loadPaymentList()
   }, [])
 
-  useEffect(() => {
-    console.log(paymentSelected);
-  }, [paymentSelected])
-
   const handleChangePayment = (val) => {
     setPaymentSelected(val)
     setEditMode(false)
