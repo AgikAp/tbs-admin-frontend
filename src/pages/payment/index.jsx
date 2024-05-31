@@ -3,7 +3,7 @@ import PageHeader from '../../components/pageheader'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faAlignRight, faCancel, faPlus, faTimes, faTrash } from '@fortawesome/free-solid-svg-icons'
 import Section from '../../components/sections'
-import { GET_ListPayment, POST_CreateOrUpdatePayment } from '../../fetchs/payment'
+import { DELETE_DeletePaymentByID, GET_ListPayment, POST_CreateOrUpdatePayment } from '../../fetchs/payment'
 import { errorWriter } from '../../utils/errorwriter'
 import PaymentListCard from './paymentlistcard'
 import PaymentField from './paymentfield'
@@ -46,7 +46,7 @@ export default function PaymentPage() {
   }
 
   const handleAddNew = () => {
-    setPaymentSelected({ payment_type: {}, payment_requirements:[] })
+    setPaymentSelected({ payment_type: {}, payment_requirements: [] })
     setCreateMode(!createMode)
     setEditMode(!editMode)
     setMobileList(false)
@@ -70,7 +70,7 @@ export default function PaymentPage() {
     setMobileList(true)
   }
 
-  const handleSubmit = async (index) => {
+  const handleSubmit = async () => {
     const payload = { ...paymentSelected }
     if (payload?.image_file) {
       try {
@@ -87,6 +87,18 @@ export default function PaymentPage() {
       loadPaymentList()
       setCreateMode(false)
       setEditMode(false)
+    } catch (e) {
+      errorWriter(e, setErr)
+    }
+  }
+
+  const handleDelete = async () => {
+    try {
+      await DELETE_DeletePaymentByID(paymentSelected.id, setLoading)
+      loadPaymentList()
+      setCreateMode(false)
+      setEditMode(false)
+      document.getElementById('confirm_delete').close()
     } catch (e) {
       errorWriter(e, setErr)
     }
@@ -109,7 +121,7 @@ export default function PaymentPage() {
         </> :
         <>
           {editMode ?
-            <div className='flex gap-3'>
+            <div className='flex gap-3 flex-wrap'>
               <button className='btn bg-primary-2 hover:bg-primary-1 text-light-0 font-semibold px-5 lg:px-7 text-[14px]' onClick={handleCancelEdit}>
                 <FontAwesomeIcon icon={faCancel} />
                 Cancel
@@ -119,15 +131,20 @@ export default function PaymentPage() {
                 Save
               </button>
             </div> :
-            <div className='flex gap-3'>
-              <button className='btn bg-primary-2 hover:bg-primary-1 text-light-0 font-semibold px-5 lg:px-7 text-[14px]' onClick={handleAddNew}>
+            <div className='flex gap-3 flex-wrap'>
+              <button className='btn btn-xs lg:btn-md bg-primary-2 hover:bg-primary-1 text-light-0 font-semibold px-5 lg:px-7 text-[14px]' onClick={handleAddNew}>
                 <FontAwesomeIcon icon={faPlus} />
                 Add New
               </button>
-              <button className='btn bg-primary-2 hover:bg-primary-1 text-light-0 font-semibold px-5 lg:px-7 text-[14px]' onClick={handleEdit}>
+              <button className='btn btn-xs lg:btn-md bg-primary-2 hover:bg-primary-1 text-light-0 font-semibold px-5 lg:px-7 text-[14px]' onClick={handleEdit}>
                 <FontAwesomeIcon icon={faEdit} />
                 Edit
               </button>
+              <button className='btn btn-xs lg:btn-md bg-red-500 hover:bg-red-800 text-light-0 font-semibold px-5 lg:px-7 text-[14px]' onClick={() => document.getElementById('confirm_delete').showModal()}>
+                <FontAwesomeIcon icon={faTrash} />
+                Delete
+              </button>
+
             </div>
           }
         </>
@@ -142,6 +159,22 @@ export default function PaymentPage() {
           <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
           <span>{err}</span>
         </div>}
+
+      <dialog id="confirm_delete" className="modal">
+        <div className="modal-box">
+          <h3 className="font-bold text-lg">Confirmation</h3>
+          <p className="py-4">Are you sure to delete '{paymentSelected.name}'</p>
+          <div className="modal-action">
+            <button className='btn bg-red-500 hover:bg-red-800 text-light-0 font-semibold px-5 lg:px-7 text-[14px]' onClick={handleDelete}>
+              <FontAwesomeIcon icon={faTrash} />
+              Delete
+            </button>
+            <form method="dialog">
+              <button className="btn">Close</button>
+            </form>
+          </div>
+        </div>
+      </dialog>
 
       <PageHeader page={'Payments Page'} />
       <div className='my-5'>

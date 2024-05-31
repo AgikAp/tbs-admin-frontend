@@ -25,3 +25,15 @@ export const POST_CreateOrUpdatePayment = async (payload, setLoading) => {
   }
 
 }
+
+export const DELETE_DeletePaymentByID = async (id, setLoading) => {
+  setLoading(true)
+  try {
+    await instance.delete('/payment/'.concat(id))
+    setLoading(false)
+  } catch (e) {
+    setLoading(false)
+    throw e
+  }
+
+}
