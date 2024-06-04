@@ -2,8 +2,8 @@ import React, { useEffect, useState } from 'react'
 import PageHeader from '../../components/pageheader'
 import Section from '../../components/sections'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faArrowDownLong, faArrowUpRightFromSquare, faMoneyBillTransfer, faSearch } from '@fortawesome/free-solid-svg-icons'
-import { GET_DetailTransaction, GET_ListTransaction } from '../../fetchs/transaction'
+import { faArrowDownLong, faArrowUpRightFromSquare, faMoneyBillTransfer, faSearch, faTrash } from '@fortawesome/free-solid-svg-icons'
+import { GET_DetailTransaction, GET_ListTransaction, PUT_RefundTransaction } from '../../fetchs/transaction'
 import { errorWriter } from '../../utils/errorwriter'
 import moment from 'moment'
 import InfiniteScroll from 'react-infinite-scroll-component'
@@ -101,7 +101,7 @@ export default function GuestTransactionPage() {
     setPage(prevPage => prevPage + 1)
   }
 
-  const [openDetailId, setOpenDetailId] = useState({})
+  const [openDetailId, setOpenDetailId] = useState('')
   const [openDetail, setOpenDetail] = useState({})
   const [transactionSelected, setTransactionSelected] = useState({})
   const showModal = (id, value) => {
@@ -123,6 +123,28 @@ export default function GuestTransactionPage() {
     fetchDetailTransaction()
   }, [openDetailId])
 
+
+  const handleRefund = async () => {
+    try {
+      const response = await PUT_RefundTransaction(openDetailId, setLoading)
+      setOpenDetailId(response.data.data.id)
+      setTransactionSelected({...transactionSelected, need_refund: false, order_status: response.data.data.status, payment_status: response.data.data.payment_status})
+
+      let indexTrx = transactions.findIndex(val => val?.id === response.data.data.id)
+      if (indexTrx > -1) {
+        transactions[indexTrx].need_refund = false
+        transactions[indexTrx].order_status = response.data.data.status
+        transactions[indexTrx].payment_status = response.data.data.payment_status
+        setTransactions([...transactions])
+      }
+
+      document.getElementById('confirm_refund').close()
+
+    } catch (e) {
+      errorWriter(e, err)
+    }
+  }
+
   return (
     <>
       {err &&
@@ -131,6 +153,22 @@ export default function GuestTransactionPage() {
           <span>{err}</span>
         </div>}
 
+      <dialog id="confirm_refund" className="modal">
+        <div className="modal-box">
+          <h3 className="font-bold text-lg">Confirmation</h3>
+          <p className="py-4">Are you sure to refund '{transactionSelected?.transaction_code}'</p>
+          <div className="modal-action">
+            <button className='btn bg-red-500 hover:bg-red-800 text-light-0 font-semibold px-5 lg:px-7 text-[14px]' onClick={handleRefund}>
+              <FontAwesomeIcon icon={faTrash} />
+              Refund
+            </button>
+            <form method="dialog">
+              <button className="btn">Close</button>
+            </form>
+          </div>
+        </div>
+      </dialog>
+
       <dialog id="modal_detail" className="modal">
         <div className="modal-box w-11/12 max-w-5xl">
           <h3 className="font-bold text-lg">Transaction Code {openDetail?.transaction_code}</h3>
@@ -138,7 +176,7 @@ export default function GuestTransactionPage() {
           <div className="modal-action">
             {
               transactionSelected.need_refund &&
-              <button className='btn bg-red-500 text-white'>
+              <button className='btn bg-red-500 text-white' onClick={() => document.getElementById('confirm_refund').showModal()}>
                 <FontAwesomeIcon icon={faMoneyBillTransfer} /> Refund Payment
               </button>
             }

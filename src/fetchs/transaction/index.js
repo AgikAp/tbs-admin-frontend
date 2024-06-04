@@ -25,3 +25,16 @@ export const GET_DetailTransaction = async (id, setLoading) => {
   }
 
 }
+
+export const PUT_RefundTransaction = async (id, setLoading) => {
+  setLoading(true)
+  try {
+    const response = await instance.put(`/transaction/refund/`+id)
+    setLoading(false)
+    return response
+  } catch (e) {
+    setLoading(false)
+    throw e
+  }
+
+}
