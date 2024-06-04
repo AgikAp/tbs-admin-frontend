@@ -2,14 +2,15 @@ import React, { useEffect, useState } from 'react'
 import PageHeader from '../../components/pageheader'
 import Section from '../../components/sections'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faArrowDownLong, faArrowUpRightFromSquare, faSearch } from '@fortawesome/free-solid-svg-icons'
-import { GET_ListTransaction } from '../../fetchs/transaction'
+import { faArrowDownLong, faArrowUpRightFromSquare, faMoneyBillTransfer, faSearch } from '@fortawesome/free-solid-svg-icons'
+import { GET_DetailTransaction, GET_ListTransaction } from '../../fetchs/transaction'
 import { errorWriter } from '../../utils/errorwriter'
 import moment from 'moment'
 import InfiniteScroll from 'react-infinite-scroll-component'
 import Transaction from './transaction'
 import { useDebounce } from '@uidotdev/usehooks'
 import useWebSocket from 'react-use-websocket'
+import TransactionDetailContent from './transactiondetailcontent'
 
 export default function GuestTransactionPage() {
   const [needRefund, setNeedRefund] = useState(false)
@@ -76,7 +77,14 @@ export default function GuestTransactionPage() {
     try {
       const response = await GET_ListTransaction({ isGuest: true, needRefund: false, limit: 1, keyword: id, page: 1 }, setLoading)
       const tempTransaction = [...transactions]
-      tempTransaction.unshift(response.data.data.data[0])
+      if (!needRefund) {
+        tempTransaction.unshift(response.data.data.data[0])
+      }
+
+      if (needRefund && response.data.data.data[0].need_refund) {
+        tempTransaction.unshift(response.data.data.data[0])
+      }
+
       setTransactions(tempTransaction)
     } catch (e) {
       errorWriter(e, setErr)
@@ -85,7 +93,6 @@ export default function GuestTransactionPage() {
 
   useEffect(() => {
     if (lastJsonMessage?.transaction_id && liveSync) {
-      console.log(lastJsonMessage);
       fetchOneTransactionTiny(lastJsonMessage.transaction_id)
     }
   }, [liveSync, lastJsonMessage])
@@ -94,6 +101,28 @@ export default function GuestTransactionPage() {
     setPage(prevPage => prevPage + 1)
   }
 
+  const [openDetailId, setOpenDetailId] = useState({})
+  const [openDetail, setOpenDetail] = useState({})
+  const [transactionSelected, setTransactionSelected] = useState({})
+  const showModal = (id, value) => {
+    setOpenDetailId(id)
+    setTransactionSelected(value)
+    document.getElementById('modal_detail').showModal();
+  };
+
+  const fetchDetailTransaction = async () => {
+    try {
+      const response = await GET_DetailTransaction(openDetailId, setLoading)
+      setOpenDetail(response.data.data)
+    } catch (e) {
+      errorWriter(e, err)
+    }
+  }
+
+  useEffect(() => {
+    fetchDetailTransaction()
+  }, [openDetailId])
+
   return (
     <>
       {err &&
@@ -101,6 +130,24 @@ export default function GuestTransactionPage() {
           <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
           <span>{err}</span>
         </div>}
+
+      <dialog id="modal_detail" className="modal">
+        <div className="modal-box w-11/12 max-w-5xl">
+          <h3 className="font-bold text-lg">Transaction Code {openDetail?.transaction_code}</h3>
+          <TransactionDetailContent content={openDetail} />
+          <div className="modal-action">
+            {
+              transactionSelected.need_refund &&
+              <button className='btn bg-red-500 text-white'>
+                <FontAwesomeIcon icon={faMoneyBillTransfer} /> Refund Payment
+              </button>
+            }
+            <form method="dialog">
+              <button className="btn">Close</button>
+            </form>
+          </div>
+        </div>
+      </dialog>
 
       <PageHeader page={"Guest Transaction Page"} />
       <div className='my-5'>
@@ -135,7 +182,7 @@ export default function GuestTransactionPage() {
               </thead>
               <tbody>
                 {transactions.map((val, i) =>
-                  <Transaction key={val.id + i} value={val} index={i} transactions={transactions} setTransactions={setTransactions} liveSync={liveSync} />
+                  <Transaction key={val.id + i} value={val} index={i} transactions={transactions} setTransactions={setTransactions} liveSync={liveSync} showModal={showModal} />
                 )}
               </tbody>
             </table>

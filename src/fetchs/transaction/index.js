@@ -12,3 +12,16 @@ export const GET_ListTransaction = async ({ isGuest, needRefund, limit, page, ke
   }
 
 }
+
+export const GET_DetailTransaction = async (id, setLoading) => {
+  setLoading(true)
+  try {
+    const response = await instance.get(`/transaction/`+id)
+    setLoading(false)
+    return response
+  } catch (e) {
+    setLoading(false)
+    throw e
+  }
+
+}
