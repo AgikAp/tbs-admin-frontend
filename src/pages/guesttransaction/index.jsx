@@ -9,6 +9,7 @@ import moment from 'moment'
 import InfiniteScroll from 'react-infinite-scroll-component'
 import Transaction from './transaction'
 import { useDebounce } from '@uidotdev/usehooks'
+import useWebSocket from 'react-use-websocket'
 
 export default function GuestTransactionPage() {
   const [needRefund, setNeedRefund] = useState(false)
@@ -23,7 +24,6 @@ export default function GuestTransactionPage() {
   const [err, setErr] = useState(null)
 
   const [transactions, setTransactions] = useState([])
-
 
   const additionalList = (
     <>
@@ -63,6 +63,32 @@ export default function GuestTransactionPage() {
     setPage(1)
     fetchTransaction(true, 1)
   }, [needRefund, liveSync, keywordDebouce])
+
+  const { lastJsonMessage } = useWebSocket(
+    import.meta.env.VITE_APP_WEB_SOCKET_BASE_URL.concat('/ws?groupid=', 'new-transaction'),
+    {
+      share: false,
+      shouldReconnect: () => true
+    }
+  )
+
+  const fetchOneTransactionTiny = async (id) => {
+    try {
+      const response = await GET_ListTransaction({ isGuest: true, needRefund: false, limit: 1, keyword: id, page: 1 }, setLoading)
+      const tempTransaction = [...transactions]
+      tempTransaction.unshift(response.data.data.data[0])
+      setTransactions(tempTransaction)
+    } catch (e) {
+      errorWriter(e, setErr)
+    }
+  }
+
+  useEffect(() => {
+    if (lastJsonMessage?.transaction_id && liveSync) {
+      console.log(lastJsonMessage);
+      fetchOneTransactionTiny(lastJsonMessage.transaction_id)
+    }
+  }, [liveSync, lastJsonMessage])
 
   const loadMore = () => {
     setPage(prevPage => prevPage + 1)
