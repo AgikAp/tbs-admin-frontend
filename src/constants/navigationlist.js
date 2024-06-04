@@ -1,5 +1,5 @@
 import { icon } from "@fortawesome/fontawesome-svg-core";
-import { faBoxesStacked, faCreditCard, faGamepad, faHome, faRectangleAd } from "@fortawesome/free-solid-svg-icons";
+import { faBoxesStacked, faCreditCard, faGamepad, faHome, faListCheck, faRectangleAd } from "@fortawesome/free-solid-svg-icons";
 
 export const navigationList = [
   {
@@ -29,6 +29,16 @@ export const navigationList = [
         display: "Payments",
         icon: faCreditCard,
         link: '/payment'
+      }
+    ]
+  },
+  {
+    group: 'Transaction Menu',
+    list: [
+      {
+        display: 'Transaction Guest',
+        icon: faListCheck,
+        link: '/transaction/guest'
       }
     ]
   }

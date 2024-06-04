@@ -6,6 +6,7 @@ import GameDetailPage from "./pages/gamedetail";
 import ItemPage from "./pages/item";
 import BannerPage from "./pages/banner";
 import PaymentPage from "./pages/payment";
+import GuestTransactionPage from "./pages/guesttransaction";
 
 export default function App() {
   return (
@@ -21,6 +22,10 @@ export default function App() {
               <Route path="/item" element={<ItemPage />} />
               <Route path="/banner" element={<BannerPage />} />
               <Route path="/payment" element={<PaymentPage />} />
+              
+              <Route path="transaction">
+                <Route path="guest" element={<GuestTransactionPage />} />
+              </Route>
             </Route>
           </Routes>
         </BrowserRouter>
