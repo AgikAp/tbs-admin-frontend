@@ -41,10 +41,24 @@ export default function Sidenav() {
         <input id="my-drawer-2" type="checkbox" className="drawer-toggle" />
         <div className="drawer-side">
           <label htmlFor="my-drawer-2" aria-label="close sidebar" className="drawer-overlay"></label>
-          <ul className="menu p-4 w-80 min-h-full bg-base-200 text-base-content bg-dark-1">
-            {/* Sidebar content here */}
-            <li><a>Sidebar Item 1</a></li>
-            <li><a>Sidebar Item 2</a></li>
+          <ul className="menu p-4 w-80 min-h-full text-base-content bg-dark-1">
+            <div className='text-left px-5 my-5'>
+              <span className='text-[28px] text-light-1 font-bold'>Dashboard.</span>
+            </div>
+            {navigationList.map((group, i) =>
+              <div className='text-[14px] font-light' key={group + "mobile"}>
+                <span className='pl-8'>
+                  {group.group}
+                </span>
+                <div className='my-5'>
+                  {group.list.map((val, i) =>
+                    <label htmlFor="my-drawer-2" key={val.display + i + "dekstop"} >
+                      <SideLink active={false} display={val.display} icon={val.icon} onClick={() => navigate(val.link)} />
+                    </label>
+                  )}
+                </div>
+              </div>
+            )}
           </ul>
         </div>
       </div>
