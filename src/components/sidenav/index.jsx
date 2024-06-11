@@ -15,7 +15,7 @@ export default function Sidenav() {
           </div>
           <ul className='px-5 py-10'>
             {navigationList.map((group, i) =>
-              <div className='text-[14px] font-light' key={group + "dekstop"}>
+              <div className='text-[14px] font-light' key={group + i + "dekstop"}>
                 <span className='pl-8'>
                   {group.group}
                 </span>
@@ -46,7 +46,7 @@ export default function Sidenav() {
               <span className='text-[28px] text-light-1 font-bold'>Dashboard.</span>
             </div>
             {navigationList.map((group, i) =>
-              <div className='text-[14px] font-light' key={group + "mobile"}>
+              <div className='text-[14px] font-light' key={group + i + "mobile"}>
                 <span className='pl-8'>
                   {group.group}
                 </span>

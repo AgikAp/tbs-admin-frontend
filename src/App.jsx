@@ -7,6 +7,7 @@ import ItemPage from "./pages/item";
 import BannerPage from "./pages/banner";
 import PaymentPage from "./pages/payment";
 import GuestTransactionPage from "./pages/guesttransaction";
+import AdminPage from "./pages/admins";
 
 export default function App() {
   return (
@@ -25,6 +26,9 @@ export default function App() {
               
               <Route path="transaction">
                 <Route path="guest" element={<GuestTransactionPage />} />
+              </Route>
+              <Route path="admin">
+                <Route path="list" element={<AdminPage />} />
               </Route>
             </Route>
           </Routes>
