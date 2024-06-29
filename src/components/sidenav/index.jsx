@@ -9,24 +9,26 @@ export default function Sidenav() {
   return (
     <>
       <div className='min-h-lvh py-5 px-8 hidden md:block col-span-2'>
-        <div className='min-w-full min-h-full bg-dark-1 shadow-lg py-8'>
-          <div className='text-center'>
-            <span className='text-[28px] text-light-1 font-bold'>Dashboard.</span>
-          </div>
-          <ul className='px-5 py-10'>
-            {navigationList.map((group, i) =>
-              <div className='text-[14px] font-light' key={group + i + "dekstop"}>
-                <span className='pl-8'>
-                  {group.group}
-                </span>
-                <div className='my-5'>
-                  {group.list.map((val, i) =>
-                    <SideLink active={false} display={val.display} icon={val.icon} onClick={() => navigate(val.link)} key={val.display + i + "dekstop"} />
-                  )}
+        <div className='min-w-full h-dvh shadow-lg py-8'>
+          <div className='h-full overflow-auto'>
+            <div className='text-center'>
+              <span className='text-[28px] text-light-1 font-bold'>Dashboard.</span>
+            </div>
+            <ul className='px-5 py-10'>
+              {navigationList.map((group, i) =>
+                <div className='text-[14px] font-light' key={group + i + "dekstop"}>
+                  <span className='pl-8'>
+                    {group.group}
+                  </span>
+                  <div className='my-5'>
+                    {group.list.map((val, i) =>
+                      <SideLink active={false} display={val.display} icon={val.icon} onClick={() => navigate(val.link)} key={val.display + i + "dekstop"} />
+                    )}
+                  </div>
                 </div>
-              </div>
-            )}
-          </ul>
+              )}
+            </ul>
+          </div>
         </div>
       </div>
       <div className='col-span-12 xl:hidden px-3 py-3'>
