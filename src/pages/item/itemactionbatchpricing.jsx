@@ -20,7 +20,7 @@ export default function ItemActionBatchPricing({ loading, items, setItems, sortB
         priceTemp.forEach((price, i) => {
           if ((price.level === 'guest' && guest) || (price.level === 'reseller' && reseller) || (price.level === 'special' && special)) {
             price.type = type
-            price.margin = value
+            price.margin = parseFloat(value)
             priceTemp[i] = price
           }
         })
