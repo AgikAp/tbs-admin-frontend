@@ -2,9 +2,9 @@ import React, { useEffect, useState } from 'react'
 import PageHeader from '../../components/pageheader'
 import Section from '../../components/sections'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faArrowUpRightFromSquare, faSave, faUserPlus } from '@fortawesome/free-solid-svg-icons'
+import { faArrowUpRightFromSquare, faCancel, faEdit, faSave, faUserPlus } from '@fortawesome/free-solid-svg-icons'
 import { errorWriter } from '../../utils/errorwriter'
-import { GET_AdminList } from '../../fetchs/admin'
+import { GET_AdminList, POST_AdminCreate } from '../../fetchs/admin'
 import CustomSelectOptions from '../../components/customselectoptions'
 import { GET_RoleList } from '../../fetchs/role'
 import InputLabel from '../../components/inputlabel'
@@ -17,6 +17,7 @@ export default function AdminPage() {
 
   const [adminPayload, setAdminPayload] = useState({})
   const [editMode, setEditMode] = useState(false)
+  const [createMode, setCreateMode] = useState(false)
   const [listRole, setListRole] = useState([])
 
   useEffect(() => {
@@ -42,11 +43,16 @@ export default function AdminPage() {
     }
   }
 
-  const showModal = (val, isEdit) => {
+  const showModal = (val, isEdit, isCreate) => {
     setEditMode(isEdit)
-    isEdit ? setAdminPayload(val) : setAdminPayload({})
+    setCreateMode(isCreate)
+    !isCreate ? setAdminPayload(val) : setAdminPayload({})
     document.getElementById('modal_detail').showModal();
   };
+
+  const closeModal = (id) => {
+    document.getElementById('modal_detail').close()
+  }
 
   const handleChangeRoles = (list) => {
     const tempPayload = { ...adminPayload }
@@ -68,12 +74,24 @@ export default function AdminPage() {
  
   const additionalAdminList = (
     <>
-      <button className='btn bg-primary-2 hover:bg-primary-1 text-light-0 font-semibold px-5 lg:px-7 text-[14px]' onClick={() => showModal('', false)}>
+      <button className='btn bg-primary-2 hover:bg-primary-1 text-light-0 font-semibold px-5 lg:px-7 text-[14px]' onClick={() => showModal('', true, true)}>
         <FontAwesomeIcon icon={faUserPlus} />
         Add New
       </button>
     </>
   )
+
+  const handleOnSubmit =  async () => {
+    try {
+      var response = await POST_AdminCreate(adminPayload, setLoading)
+      setAdminPayload(response)
+      fetchAdminList()
+      closeModal()
+    } catch (e) {
+      errorWriter(e, setErr)
+      return
+    }
+  }
 
   return (
     <>
@@ -87,22 +105,36 @@ export default function AdminPage() {
         <div className="modal-box">
           <h3 className="font-bold text-lg">Detail</h3>
           <div className=''>
-            <InputLabel label={'Username'} name={'username'} value={adminPayload?.username ?? ''} onChange={handleChange} />
-            <InputLabel label={'Fullname'} name={'fullname'} value={adminPayload?.fullname ?? ''} onChange={handleChange} />
-            {!editMode &&
-              <InputLabel label={'Password'} name={'password'} type={'password'} value={adminPayload?.password ?? ''} onChange={handleChange} />
+            <InputLabel label={'Username'} name={'username'} value={adminPayload?.username ?? ''} onChange={handleChange} disabled={!editMode} />
+            <InputLabel label={'Fullname'} name={'fullname'} value={adminPayload?.fullname ?? ''} onChange={handleChange} disabled={!editMode} />
+            {editMode &&
+              <InputLabel label={'Password'} name={'password'} type={'password'} value={adminPayload?.password ?? ''} onChange={handleChange} disabled={!editMode} />
             }
-            <CustomSelectOptions list={listRole} listData={adminPayload?.roles ?? []} setListData={handleChangeRoles} onChange={handleChange} />
+            <CustomSelectOptions list={listRole} listData={adminPayload?.roles ?? []} setListData={handleChangeRoles} onChange={handleChange} disabled={!editMode} />
             <label className="label cursor-pointer mt-5 justify-normal">
-              <input type="checkbox" className="checkbox" checked={adminPayload?.status ?? false} name='status' onChange={handleChangeCheckBox} />
+              <input type="checkbox" className="checkbox" checked={adminPayload?.status ?? true} name='status' onChange={handleChangeCheckBox} disabled={!editMode} />
               <span className="label-text pl-5">Active</span>
             </label>
           </div>
           <div className="modal-action">
-            <button className='btn bg-primary-2 text-white'><FontAwesomeIcon icon={faSave} /> Save</button>
-            <form method="dialog">
-              <button className="btn">Close</button>
-            </form>
+            {
+              editMode && !createMode &&
+              <button className='btn bg-red-500 text-white' onClick={() => setEditMode(false)}><FontAwesomeIcon icon={faCancel} /> Cancel</button>
+            }
+            {
+              !editMode && !createMode && adminPayload?.username?.toLowerCase() !== 'superadmin' && 
+              <button className='btn bg-primary-2 text-white' onClick={() => setEditMode(true)}><FontAwesomeIcon icon={faEdit} /> Edit</button>
+            }
+            {
+              editMode &&
+              <button className='btn bg-primary-2 text-white' onClick={handleOnSubmit}><FontAwesomeIcon icon={faSave} /> Save</button>
+            }
+            {
+              (!editMode || (editMode && createMode)) &&
+                <form method="dialog">
+                  <button className="btn">Close</button>
+                </form>
+            }
           </div>
         </div>
       </dialog>
@@ -132,7 +164,7 @@ export default function AdminPage() {
                     <td>{val.fullname}</td>
                     <td>{val.status ? 'Active' : 'Inactive'}</td>
                     <td>{val.roles.map(val => val.name).join(', ')}</td>
-                    <td><FontAwesomeIcon icon={faArrowUpRightFromSquare} className='hover:cursor-pointer' onClick={() => showModal(val, true)} /></td>
+                    <td><FontAwesomeIcon icon={faArrowUpRightFromSquare} className='hover:cursor-pointer' onClick={() => showModal(val, false, false)} /></td>
                   </tr>
                 )
               }

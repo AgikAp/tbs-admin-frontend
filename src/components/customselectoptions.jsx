@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react'
 
-export default function CustomSelectOptions({ list, listData, setListData }) {
+export default function CustomSelectOptions({ list, listData, setListData, disabled }) {
   const [isOpen, setIsOpen] = useState(false)
 
   const onMouse = () => {
@@ -8,7 +8,6 @@ export default function CustomSelectOptions({ list, listData, setListData }) {
   }
 
   const handleChange = (e, value) => {
-    console.log(e.target.checked);
     if (e.target.checked) {
       setListData([...listData, {id: value.id, name: value.name}])
     } else {
@@ -36,7 +35,7 @@ export default function CustomSelectOptions({ list, listData, setListData }) {
               {
                 list.map((val, i) =>
                   <label className="label cursor-pointer justify-normal" key={val.name + i}>
-                    <input type="checkbox" className="checkbox" checked={listData?.findIndex((value) => value?.name === val.name) > -1} name='status' onChange={(e) => handleChange(e, val)} />
+                    <input type="checkbox" className="checkbox" checked={listData?.findIndex((value) => value?.name === val.name) > -1} name='status' onChange={(e) => handleChange(e, val)} disabled={disabled} />
                     <span className="label-text pl-5">{val.name}</span>
                   </label>
                 )

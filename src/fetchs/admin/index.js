@@ -12,3 +12,16 @@ export const GET_AdminList = async (setLoading) => {
   }
 
 }
+
+export const POST_AdminCreate = async (paylaod, setLoading) => {
+  setLoading(true)
+  try {
+    const response = await instance.post('/admin', paylaod)
+    setLoading(false)
+    return response?.data?.data
+  } catch (e) {
+    setLoading(false)
+    throw e
+  }
+    
+}
