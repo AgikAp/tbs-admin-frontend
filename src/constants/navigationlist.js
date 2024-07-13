@@ -1,5 +1,5 @@
 import { icon } from "@fortawesome/fontawesome-svg-core";
-import { faBoxesStacked, faCreditCard, faGamepad, faHome, faListCheck, faRectangleAd, faUsersGear } from "@fortawesome/free-solid-svg-icons";
+import { faBoxesStacked, faCreditCard, faGamepad, faHome, faListCheck, faRectangleAd, faStreetView, faUsersGear } from "@fortawesome/free-solid-svg-icons";
 
 export const navigationList = [
   {
@@ -49,6 +49,11 @@ export const navigationList = [
         display: 'Admin List',
         icon: faUsersGear,
         link: '/admin/list'
+      },
+      {
+        display: 'Role Access',
+        icon: faStreetView,
+        link: '/admin/role'
       }
     ]
   }
