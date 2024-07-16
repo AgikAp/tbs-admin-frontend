@@ -41,10 +41,8 @@ export default function RoleAccessPage() {
   
   const postRoleUpdateOrCreate = async () => {
     try {
-      var payload = {...detailRole}
-      
       const response = await POST_RoleCreateOrUpdate(setLoading, detailRole, isEdit)
-      setListRole(response.data.data)
+      setDetailRole(response.data)
     } catch (e) {
       errorWriter(e, setErr)
     }
@@ -124,7 +122,6 @@ export default function RoleAccessPage() {
             isEdit ?
               <h3 className="font-bold text-lg">Edit {detailRole?.id}</h3> :
               <h3 className="font-bold text-lg">Add New</h3>
-
           }
           <div className=''>
             <InputLabel label={'Parent'} name={'parent'} value={detailRole?.parent_id ?? '-'} readOnly={true} />

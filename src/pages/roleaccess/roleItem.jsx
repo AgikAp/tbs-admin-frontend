@@ -5,13 +5,13 @@ import React, { useState } from 'react'
 export default function RoleItem({ val, action, setActive, activeRole }) {
   const [show, setShow] = useState(false)
   return (
-    <div className={`px-5 py-5 border-l-2 border-l-white/20 cursor-pointer transition-all duration-200 ease-in-out`}>
+    <div className={`pl-5 py-5 border-l-2 border-l-white/20 cursor-pointer transition-all duration-200 ease-in-out`}>
       <div className={`flex relative items-center gap-5 ${activeRole?.id === val?.id ? 'bg-primary-1 rounded ' : ''}  ${val?.roles?.length > 0 ? 'mb-5' : 'mb-0'}`} onMouseEnter={() => setShow(true)} onMouseLeave={() => setShow(false)} onClick={() => setActive(val)}>
         <div className='absolute -ml-6 flex items-center h-full'>
           <div className='bg-white py-1 px-1 rounded-full' />
         </div>
         <span className='block px-2'>{val?.name}</span>
-        <div className='inline-block w-full py-2'>
+        <div className='inline-block w-full py-2 px-3'>
           <div className={`flex float-end gap-1 ${show ? 'visible' : 'invisible'}`}>
             {
               !val?.id?.includes('SUPERADMIN') &&
