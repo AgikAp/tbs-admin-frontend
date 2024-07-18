@@ -27,3 +27,16 @@ export const POST_RoleCreateOrUpdate = async (setLoading, payload, update) => {
   }
 
 }
+
+export const DELETE_RoleDelete = async (setLoading, roleId) => {
+  setLoading(true)
+  try {
+    const response = await instance.delete('/role/'.concat(roleId))
+    setLoading(false)
+    return response
+  } catch (e) {
+    setLoading(false)
+    throw e
+  }
+
+}

@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react'
 import PageHeader from '../../components/pageheader'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faPlus, faSave, faSpinner } from '@fortawesome/free-solid-svg-icons'
+import { faPlus, faSave, faSpinner, faTrash } from '@fortawesome/free-solid-svg-icons'
 import Section from '../../components/sections'
 import { GET_AccessList } from '../../fetchs/access'
-import { GET_RoleList, POST_RoleCreateOrUpdate } from '../../fetchs/role'
+import { DELETE_RoleDelete, GET_RoleList, POST_RoleCreateOrUpdate } from '../../fetchs/role'
 import InputLabel from '../../components/inputlabel'
 import RoleItem from './roleItem'
 import { errorWriter } from '../../utils/errorwriter'
@@ -38,10 +38,19 @@ export default function RoleAccessPage() {
       errorWriter(e, setErr)
     }
   }
-  
+
   const postRoleUpdateOrCreate = async () => {
     try {
       const response = await POST_RoleCreateOrUpdate(setLoading, detailRole, isEdit)
+      setDetailRole(response.data)
+    } catch (e) {
+      errorWriter(e, setErr)
+    }
+  }
+
+  const deleteRole = async () => {
+    try {
+      const response = await DELETE_RoleDelete(setLoading, activeRole?.id)
       setDetailRole(response.data)
     } catch (e) {
       errorWriter(e, setErr)
@@ -93,7 +102,12 @@ export default function RoleAccessPage() {
   };
 
   const closeModal = (id) => {
-    document.getElementById('modal_detail').close()
+    document.getElementById(id).close()
+  }
+
+  const deleteAction = (val) => {
+    setDetailRole(val)
+    document.getElementById('modal_delete').showModal();
   }
 
   const forceUpperSlug = (value) => {
@@ -102,7 +116,15 @@ export default function RoleAccessPage() {
 
   const onSubmit = async () => {
     await postRoleUpdateOrCreate()
-    closeModal()
+    closeModal('modal_detail')
+    fetchRoleList()
+    setActiveRole({})
+    setDetailRole({})
+  }
+
+  const onDelete = async () => {
+    await deleteRole()
+    closeModal('modal_delete')
     fetchRoleList()
     setActiveRole({})
     setDetailRole({})
@@ -116,6 +138,20 @@ export default function RoleAccessPage() {
           <span>{err}</span>
         </div>}
 
+      <dialog id="modal_delete" className="modal">
+        <div className="modal-box">
+          <h3 className="font-bold text-lg">Delete Confirmation</h3>
+          <br />
+          <p className='font-thin'>Are you sure to delete role <span className='font-bold'>{detailRole?.name}</span>!</p>
+          <div className="modal-action">
+            <button className='btn bg-red-800 text-white' onClick={onDelete} disabled={loading}>{loading ? <FontAwesomeIcon icon={faSpinner} spin /> : <><FontAwesomeIcon icon={faTrash} /> Delete</>}</button>
+            <form method="dialog">
+              <button className="btn" disabled={loading}>Close</button>
+            </form>
+          </div>
+        </div>
+      </dialog>
+
       <dialog id="modal_detail" className="modal">
         <div className="modal-box">
           {
@@ -127,7 +163,7 @@ export default function RoleAccessPage() {
             <InputLabel label={'Parent'} name={'parent'} value={detailRole?.parent_id ?? '-'} readOnly={true} />
             <InputLabel label={'ID'} name={'id'} value={detailRole?.id ?? ''} readOnly={true} />
             <InputLabel label={'Name'} name={'name'} value={detailRole?.name ?? ''} onChange={(e) => {
-              setDetailRole({...detailRole, id: "ROLE_".concat(forceUpperSlug(e.target.value)), name: e.target.value})
+              setDetailRole({ ...detailRole, id: "ROLE_".concat(forceUpperSlug(e.target.value)), name: e.target.value })
             }} />
           </div>
           <div className="modal-action">
@@ -147,7 +183,7 @@ export default function RoleAccessPage() {
               <div className='col-span-2 px-2'>
                 <div className='overflow-y-auto w-full' style={{ maxHeight: '80vh' }}>
                   {listRole?.map((val, i) =>
-                    <RoleItem val={val} key={val + i} action={showModal} setActive={setActiveRole} activeRole={activeRole} />
+                    <RoleItem val={val} key={val + i} action={showModal} setActive={setActiveRole} activeRole={activeRole} deleteAction={deleteAction} />
                   )}
                 </div>
               </div>
