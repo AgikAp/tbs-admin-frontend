@@ -17,6 +17,7 @@ export default function RoleAccessPage() {
   const [activeRole, setActiveRole] = useState({})
   const [detailRole, setDetailRole] = useState({})
   const [accessActive, setAccessActive] = useState([])
+  const [comparisonAccessActive, setComparisonAccessActive] = useState([])
 
   const [accessList, setAccessList] = useState([])
   const [listRole, setListRole] = useState([])
@@ -39,9 +40,9 @@ export default function RoleAccessPage() {
     }
   }
 
-  const postRoleUpdateOrCreate = async () => {
+  const postRoleUpdateOrCreate = async (payload) => {
     try {
-      const response = await POST_RoleCreateOrUpdate(setLoading, detailRole, isEdit)
+      const response = await POST_RoleCreateOrUpdate(setLoading, payload, isEdit)
       setDetailRole(response.data)
     } catch (e) {
       errorWriter(e, setErr)
@@ -84,7 +85,19 @@ export default function RoleAccessPage() {
     })
 
     setAccessActive(accesses)
+    setComparisonAccessActive(accesses)
   }, [activeRole])
+
+  const additionalRoleList = (
+    <>
+      {
+        accessActive.length > 0 && accessActive !== comparisonAccessActive &&
+        <button className='btn bg-primary-2 hover:bg-primary-1 text-light-0 font-semibold px-5 lg:px-7 text-[14px]' onClick={() => onSubmitChangeAccess()} disabled={loading}>
+          {loading ? <FontAwesomeIcon icon={faSpinner} spin /> : <><FontAwesomeIcon icon={faSave} /> Save</>}
+        </button>
+      }
+    </>
+  )
 
   const showModal = (val, edit) => {
     var newVal = { ...val }
@@ -115,7 +128,7 @@ export default function RoleAccessPage() {
   }
 
   const onSubmit = async () => {
-    await postRoleUpdateOrCreate()
+    await postRoleUpdateOrCreate(detailRole)
     closeModal('modal_detail')
     fetchRoleList()
     setActiveRole({})
@@ -125,6 +138,22 @@ export default function RoleAccessPage() {
   const onDelete = async () => {
     await deleteRole()
     closeModal('modal_delete')
+    fetchRoleList()
+    setActiveRole({})
+    setDetailRole({})
+  }
+
+  const changeAccess = async (index, opt, checked) => {
+    var tempAccess = [...accessActive]
+    checked ? tempAccess.push(opt) : tempAccess.splice(index, 1)
+    setAccessActive(tempAccess)
+  }
+
+  const onSubmitChangeAccess = async () => {
+
+    var tempActiveRole = {...activeRole}
+    tempActiveRole.before_id = tempActiveRole?.id
+    await postRoleUpdateOrCreate({ ...tempActiveRole, role_accesses: accessActive })
     fetchRoleList()
     setActiveRole({})
     setDetailRole({})
@@ -177,7 +206,7 @@ export default function RoleAccessPage() {
 
       <PageHeader page={"Role Access Page"} />
       <div className='my-5'>
-        <Section title={'Role Access'} >
+        <Section title={'Role Access'} additional={additionalRoleList} >
           <div className='flex-wrap overflow-x-auto min-w-[300px] py-5'>
             <div className='grid grid-cols-8 min-w-[1200px]'>
               <div className='col-span-2 px-2'>
@@ -196,12 +225,15 @@ export default function RoleAccessPage() {
                           {val?.id}
                         </span>
                         <div className='flex flex-wrap gap-x-10 gap-y-5 my-7'>
-                          {val?.accesses?.map((opt, j) =>
-                            <label className="label cursor-pointer justify-normal" key={opt.id + j}>
-                              <input type="checkbox" className="checkbox" checked={accessActive.findIndex(val => val?.id === opt?.id) !== -1} name='status' onChange={() => ''} disabled={false} />
-                              <span className="label-text pl-5">{opt?.id}</span>
-                            </label>
-                          )}
+                          {val?.accesses?.map((opt, j) => {
+                            var findIndex = accessActive.findIndex(val => val?.id === opt?.id);
+                            return (
+                              <label className="label cursor-pointer justify-normal" key={opt.id + j}>
+                                <input type="checkbox" className="checkbox" checked={findIndex !== -1} name='status' onChange={(e) => changeAccess(findIndex, opt, e.target.checked)} disabled={false} />
+                                <span className="label-text pl-5">{opt?.id}</span>
+                              </label>
+                            )
+                          })}
                         </div>
                       </div>
                     )
