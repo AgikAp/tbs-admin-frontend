@@ -1,4 +1,4 @@
-import { faAlignRight } from '@fortawesome/free-solid-svg-icons'
+import { faAlignRight, faSignOut } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { navigationList } from '../../constants/navigationlist'
 import SideLink from './sideLink'
@@ -27,6 +27,10 @@ export default function Sidenav() {
                   </div>
                 </div>
               )}
+              <button className='btn w-full bg-primary-2 hover:bg-primary-1 text-light-0 font-semibold px-5 lg:px-7 text-[14px]' onClick={() => showModal('', true, true)}>
+                <FontAwesomeIcon icon={faSignOut} />
+                Logout
+              </button>
             </ul>
           </div>
         </div>
@@ -61,6 +65,10 @@ export default function Sidenav() {
                 </div>
               </div>
             )}
+            <button className='btn bg-primary-2 hover:bg-primary-1 text-light-0 font-semibold px-5 lg:px-7 text-[14px]' onClick={() => showModal('', true, true)}>
+              <FontAwesomeIcon icon={faSignOut} />
+              Logout
+            </button>
           </ul>
         </div>
       </div>
