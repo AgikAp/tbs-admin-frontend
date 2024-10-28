@@ -91,7 +91,7 @@ export default function RoleAccessPage() {
   const additionalRoleList = (
     <>
       {
-        accessActive.length > 0 && accessActive !== comparisonAccessActive &&
+        accessActive.length > 0 && accessActive !== comparisonAccessActive && JSON.stringify(activeRole) !== '{}' &&
         <button className='btn bg-primary-2 hover:bg-primary-1 text-light-0 font-semibold px-5 lg:px-7 text-[14px]' onClick={() => onSubmitChangeAccess()} disabled={loading}>
           {loading ? <FontAwesomeIcon icon={faSpinner} spin /> : <><FontAwesomeIcon icon={faSave} /> Save</>}
         </button>
@@ -162,18 +162,18 @@ export default function RoleAccessPage() {
   return (
     <>
       {err &&
-        <div role="alert" className="alert alert-error mb-5">
-          <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+        <div role="alert" className="mb-5 alert alert-error">
+          <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6 stroke-current shrink-0" fill="none" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
           <span>{err}</span>
         </div>}
 
       <dialog id="modal_delete" className="modal">
         <div className="modal-box">
-          <h3 className="font-bold text-lg">Delete Confirmation</h3>
+          <h3 className="text-lg font-bold">Delete Confirmation</h3>
           <br />
           <p className='font-thin'>Are you sure to delete role <span className='font-bold'>{detailRole?.name}</span>!</p>
           <div className="modal-action">
-            <button className='btn bg-red-800 text-white' onClick={onDelete} disabled={loading}>{loading ? <FontAwesomeIcon icon={faSpinner} spin /> : <><FontAwesomeIcon icon={faTrash} /> Delete</>}</button>
+            <button className='text-white bg-red-800 btn' onClick={onDelete} disabled={loading}>{loading ? <FontAwesomeIcon icon={faSpinner} spin /> : <><FontAwesomeIcon icon={faTrash} /> Delete</>}</button>
             <form method="dialog">
               <button className="btn" disabled={loading}>Close</button>
             </form>
@@ -185,8 +185,8 @@ export default function RoleAccessPage() {
         <div className="modal-box">
           {
             isEdit ?
-              <h3 className="font-bold text-lg">Edit {detailRole?.id}</h3> :
-              <h3 className="font-bold text-lg">Add New</h3>
+              <h3 className="text-lg font-bold">Edit {detailRole?.id}</h3> :
+              <h3 className="text-lg font-bold">Add New</h3>
           }
           <div className=''>
             <InputLabel label={'Parent'} name={'parent'} value={detailRole?.parent_id ?? '-'} readOnly={true} />
@@ -196,7 +196,7 @@ export default function RoleAccessPage() {
             }} />
           </div>
           <div className="modal-action">
-            <button className='btn bg-primary-2 text-white' onClick={onSubmit} disabled={loading}>{loading ? <FontAwesomeIcon icon={faSpinner} spin /> : <><FontAwesomeIcon icon={faSave} /> Save</>}</button>
+            <button className='text-white btn bg-primary-2' onClick={onSubmit} disabled={loading}>{loading ? <FontAwesomeIcon icon={faSpinner} spin /> : <><FontAwesomeIcon icon={faSave} /> Save</>}</button>
             <form method="dialog">
               <button className="btn" disabled={loading}>Close</button>
             </form>
@@ -210,27 +210,27 @@ export default function RoleAccessPage() {
           <div className='flex-wrap overflow-x-auto min-w-[300px] py-5'>
             <div className='grid grid-cols-8 min-w-[1200px]'>
               <div className='col-span-2 px-2'>
-                <div className='overflow-y-auto w-full' style={{ maxHeight: '80vh' }}>
+                <div className='w-full overflow-y-auto' style={{ maxHeight: '80vh' }}>
                   {listRole?.map((val, i) =>
                     <RoleItem val={val} key={val + i} action={showModal} setActive={setActiveRole} activeRole={activeRole} deleteAction={deleteAction} />
                   )}
                 </div>
               </div>
-              <div className='col-span-6 border-l-2 border-l-white/20 px-5'>
-                <div className='overflow-y-auto w-full' style={{ maxHeight: '80vh' }}>
+              <div className='col-span-6 px-5 border-l-2 border-l-white/20'>
+                <div className='w-full overflow-y-auto' style={{ maxHeight: '80vh' }}>
                   {
                     accessList.map((val, i) =>
-                      <div className='border-b-2 border-b-white/20 last:border-b-0 my-5 px-5' key={val.id + i}>
+                      <div className='px-5 my-5 border-b-2 border-b-white/20 last:border-b-0' key={val.id + i}>
                         <span className='block'>
                           {val?.id}
                         </span>
                         <div className='flex flex-wrap gap-x-10 gap-y-5 my-7'>
                           {val?.accesses?.map((opt, j) => {
-                            var findIndex = accessActive.findIndex(val => val?.id === opt?.id);
+                            var findIndex = accessActive.findIndex(acc => acc?.id === opt?.id);
                             return (
-                              <label className="label cursor-pointer justify-normal" key={opt.id + j}>
-                                <input type="checkbox" className="checkbox" checked={findIndex !== -1} name='status' onChange={(e) => changeAccess(findIndex, opt, e.target.checked)} disabled={false} />
-                                <span className="label-text pl-5">{opt?.id}</span>
+                              <label className="cursor-pointer label justify-normal" key={opt.id + j}>
+                                <input type="checkbox" className="checkbox" checked={findIndex !== -1} name='status' onChange={(e) => changeAccess(findIndex, opt, e.target.checked)} disabled={(JSON.stringify(activeRole) === '{}')} />
+                                <span className="pl-5 label-text">{opt?.id}</span>
                               </label>
                             )
                           })}
