@@ -12,9 +12,14 @@ export const authLoginSlice = createSlice({
   name: 'authLogin',
   initialState,
   reducers: {
-    acClearGame(state) {
-      state.loading = false
-      state.admin = {}
+    acClearState(state) {
+      state.loading = false;
+      state.admin = {};
+      state.error = null; 
+
+      localStorage.removeItem('persist:root');
+      console.log('Success logout');
+      
     }
   },
   extraReducers: (builder) => {
@@ -33,5 +38,5 @@ export const authLoginSlice = createSlice({
   }
 });
 
-export const { acClearAuth } = authLoginSlice.actions
+export const { acClearState } = authLoginSlice.actions
 

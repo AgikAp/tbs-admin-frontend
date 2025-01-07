@@ -9,8 +9,12 @@ import PaymentListCard from './paymentlistcard'
 import PaymentField from './paymentfield'
 import { faEdit, faSave } from '@fortawesome/free-regular-svg-icons'
 import { POST_UploadImage } from '../../fetchs/image'
+import { useSelector } from 'react-redux'
 
 export default function PaymentPage() {
+  const state = useSelector((state) => state?.authLogin)
+  const { admin } = state.admin
+  
   const [err, setErr] = useState(null)
   const [loading, setLoading] = useState(false)
   const [editMode, setEditMode] = useState(false)
@@ -128,15 +132,15 @@ export default function PaymentPage() {
               </button>
             </div> :
             <div className='flex gap-3 flex-wrap'>
-              <button className='btn btn-xs lg:btn-md bg-primary-2 hover:bg-primary-1 text-light-0 font-semibold px-5 lg:px-7 text-[14px]' onClick={handleAddNew}>
+              <button className={admin?.accesses?.includes('PAYMENT_UPDATE') ? 'btn btn-xs lg:btn-md bg-primary-2 hover:bg-primary-1 text-light-0 font-semibold px-5 lg:px-7 text-[14px]' : 'hidden'} onClick={handleAddNew}>
                 <FontAwesomeIcon icon={faPlus} />
                 Add New
               </button>
-              <button className='btn btn-xs lg:btn-md bg-primary-2 hover:bg-primary-1 text-light-0 font-semibold px-5 lg:px-7 text-[14px]' onClick={handleEdit}>
+              <button className={admin?.accesses?.includes('PAYMENT_UPDATE') ? 'btn btn-xs lg:btn-md bg-primary-2 hover:bg-primary-1 text-light-0 font-semibold px-5 lg:px-7 text-[14px]' : 'hidden'} onClick={handleEdit}>
                 <FontAwesomeIcon icon={faEdit} />
                 Edit
               </button>
-              <button className='btn btn-xs lg:btn-md bg-red-500 hover:bg-red-800 text-light-0 font-semibold px-5 lg:px-7 text-[14px]' onClick={() => document.getElementById('confirm_delete').showModal()}>
+              <button className={admin?.accesses?.includes('PAYMENT_DELETE') ? 'btn btn-xs lg:btn-md bg-red-500 hover:bg-red-800 text-light-0 font-semibold px-5 lg:px-7 text-[14px]' : 'hidden'} onClick={() => document.getElementById('confirm_delete').showModal()}>
                 <FontAwesomeIcon icon={faTrash} />
                 Delete
               </button>

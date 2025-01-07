@@ -143,33 +143,35 @@ export default function AdminPage() {
       <PageHeader page={"Admin List Page"} />
       <div className='my-5'>
         <Section title={'Admin List'} additional={additionalAdminList}>
-          <table className="table">
-            {/* head */}
-            <thead>
-              <tr>
-                <th></th>
-                <th>Username</th>
-                <th>Fullname</th>
-                <th>Status</th>
-                <th>Roles</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {
-                admins.map((val, i) =>
-                  <tr className={''} key={val.id + i}>
-                    <th>{i + 1}</th>
-                    <td>{val.username}</td>
-                    <td>{val.fullname}</td>
-                    <td>{val.status ? 'Active' : 'Inactive'}</td>
-                    <td>{val.roles.map(val => val.name).join(', ')}</td>
-                    <td><FontAwesomeIcon icon={faArrowUpRightFromSquare} className='hover:cursor-pointer' onClick={() => showModal(val, false, false)} /></td>
-                  </tr>
-                )
-              }
-            </tbody>
-          </table>
+          <div className="overflow-x-auto">
+            <table className="table">
+              {/* head */}
+              <thead>
+                <tr>
+                  <th></th>
+                  <th>Username</th>
+                  <th>Fullname</th>
+                  <th>Status</th>
+                  <th>Roles</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {
+                  admins.map((val, i) =>
+                    <tr className={''} key={val.id + i}>
+                      <th>{i + 1}</th>
+                      <td>{val.username}</td>
+                      <td>{val.fullname}</td>
+                      <td>{val.status ? 'Active' : 'Inactive'}</td>
+                      <td>{val.roles.map(val => val.name).join(', ')}</td>
+                      <td><FontAwesomeIcon icon={faArrowUpRightFromSquare} className='hover:cursor-pointer' onClick={() => showModal(val, false, false)} /></td>
+                    </tr>
+                  )
+                }
+              </tbody>
+            </table>
+          </div>
         </Section>
       </div>
     </>

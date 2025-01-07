@@ -7,8 +7,12 @@ import { useNavigate } from 'react-router-dom'
 import { GET_GetGameList } from '../../fetchs/game'
 import { errorWriter } from '../../utils/errorwriter'
 import GameCard from './gamecard'
+import { useSelector } from 'react-redux'
 
 export default function GamePage() {
+  const state = useSelector((state) => state?.authLogin)
+  const { admin } = state.admin
+
   const navigate = useNavigate()
   const [games, setGames] = useState([])
   const [loading, setLoading] = useState(false)
@@ -29,7 +33,7 @@ export default function GamePage() {
 
   const additionalGameList = (
     <>
-      <button className='btn bg-primary-2 hover:bg-primary-1 text-light-0 font-semibold px-5 lg:px-7 text-[14px]' onClick={() => navigate('/game/create')}>
+      <button className={admin?.accesses?.includes('GAME_UPDATE') ? 'btn bg-primary-2 hover:bg-primary-1 text-light-0 font-semibold px-5 lg:px-7 text-[14px]' : 'hidden'} onClick={() => navigate('/game/create')}>
         <FontAwesomeIcon icon={faPlus} />
         Add New
       </button>

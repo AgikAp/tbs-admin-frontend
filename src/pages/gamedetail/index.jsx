@@ -11,8 +11,12 @@ import { GET_GetGameByID, POST_CreateGame } from '../../fetchs/game'
 import { useNavigate, useParams } from 'react-router-dom'
 import { POST_UploadImage } from '../../fetchs/image'
 import { errorWriter } from '../../utils/errorwriter'
+import { useSelector } from 'react-redux'
 
 export default function GameDetailPage({ isCreate }) {
+  const state = useSelector((state) => state?.authLogin)
+  const { admin } = state.admin
+  
   const navigate = useNavigate()
   const initialEditMode = isCreate
   const {id} = useParams()
@@ -113,7 +117,7 @@ export default function GameDetailPage({ isCreate }) {
         <div className='flex justify-between'>
           <PageHeader page={'Games Detail Page'} />
           <div className='grid grid-cols-1 lg:grid-cols-2 gap-4'>
-            <button className={`btn bg-primary-2 hover:bg-primary-1 text-light-0 font-semibold px-5 lg:px-7 text-[14px] ${editMode ? 'hidden' : 'col-start-2'}`} onClick={() => setEditMode(!editMode)}>
+            <button className={admin?.accesses?.includes('GAME_UPDATE') ? `btn bg-primary-2 hover:bg-primary-1 text-light-0 font-semibold px-5 lg:px-7 text-[14px] ${editMode ? 'hidden' : 'col-start-2'}` : 'hidden'} onClick={() => setEditMode(!editMode)}>
               <FontAwesomeIcon icon={faEdit} />
               Edit
             </button>

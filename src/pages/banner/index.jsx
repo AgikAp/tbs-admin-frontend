@@ -9,8 +9,12 @@ import InputFile from '../../components/inputfile'
 import { DELETE_RemoveBanner, GET_ListBanner, POST_CreateOrUpdate } from '../../fetchs/banner'
 import { errorWriter } from '../../utils/errorwriter'
 import { POST_UploadImage } from '../../fetchs/image'
+import { useSelector } from 'react-redux'
 
 export default function BannerPage() {
+  const state = useSelector((state) => state?.authLogin)
+  const { admin } = state.admin
+
   const [err, setErr] = useState(null)
   const [image, setImage] = useState('')
   const [imageFile, setImageFile] = useState(null)
@@ -36,7 +40,7 @@ export default function BannerPage() {
 
   const additionalBannerList = (
     <>
-      <button className='btn bg-primary-2 hover:bg-primary-1 text-light-0 font-semibold px-5 lg:px-7 text-[14px]' onClick={() => openModal('modal_add_banner')}>
+      <button className={admin?.accesses?.includes('BANNER_UPDATE') ? 'btn bg-primary-2 hover:bg-primary-1 text-light-0 font-semibold px-5 lg:px-7 text-[14px]' : 'hidden'} onClick={() => openModal('modal_add_banner')}>
         <FontAwesomeIcon icon={faPlus} />
         Add New
       </button>
