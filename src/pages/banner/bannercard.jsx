@@ -1,8 +1,12 @@
 import { faEye, faTrash } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import React from 'react'
+import { useSelector } from 'react-redux'
 
 export default function BannerCard({preview, index, banner, removeBanner, changeShowing}) {
+  const state = useSelector((state) => state?.authLogin)
+  const { admin } = state.admin
+
   const handleRemoveImage = () => {
     removeBanner(banner?.id, index)
   }
@@ -20,11 +24,11 @@ export default function BannerCard({preview, index, banner, removeBanner, change
               <FontAwesomeIcon icon={faEye} />
               Preview
             </button>
-            <button className='btn btn-ghost btn-md hover:text-red-400' onClick={handleRemoveImage}>
+            <button className={admin?.accesses?.includes('BANNER_DELETE') ? 'btn btn-ghost btn-md hover:text-red-400' : 'hidden'} onClick={handleRemoveImage}>
               <FontAwesomeIcon icon={faTrash} />
               Trash
             </button>
-            <div className="form-control inline-block">
+            <div className={admin?.accesses?.includes('BANNER_UPDATE') ? 'form-control inline-block' : 'hidden'}>
               <label className="label cursor-pointer justify-normal gap-3">
                 <input type="checkbox" className="toggle checked:bg-blue-500" checked={banner?.show} onClick={handleChangeShowing} />
                 <span className='font-semibold text-[0.8rem] label-text'>Active</span>

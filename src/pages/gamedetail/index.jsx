@@ -11,8 +11,12 @@ import { GET_GetGameByID, POST_CreateGame } from '../../fetchs/game'
 import { useNavigate, useParams } from 'react-router-dom'
 import { POST_UploadImage } from '../../fetchs/image'
 import { errorWriter } from '../../utils/errorwriter'
+import { useSelector } from 'react-redux'
 
 export default function GameDetailPage({ isCreate }) {
+  const state = useSelector((state) => state?.authLogin)
+  const { admin } = state.admin
+  
   const navigate = useNavigate()
   const initialEditMode = isCreate
   const {id} = useParams()
@@ -105,15 +109,15 @@ export default function GameDetailPage({ isCreate }) {
   return (
     <>
       {err &&
-        <div role="alert" className="alert alert-error mb-5">
-          <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+        <div role="alert" className="mb-5 alert alert-error">
+          <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6 stroke-current shrink-0" fill="none" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
           <span>{err}</span>
         </div>}
       <form onSubmit={(e) => e.preventDefault()}>
         <div className='flex justify-between'>
           <PageHeader page={'Games Detail Page'} />
-          <div className='grid grid-cols-1 lg:grid-cols-2 gap-4'>
-            <button className={`btn bg-primary-2 hover:bg-primary-1 text-light-0 font-semibold px-5 lg:px-7 text-[14px] ${editMode ? 'hidden' : 'col-start-2'}`} onClick={() => setEditMode(!editMode)}>
+          <div className='grid grid-cols-1 gap-4 lg:grid-cols-2'>
+            <button className={admin?.accesses?.includes('GAME_UPDATE') ? `btn bg-primary-2 hover:bg-primary-1 text-light-0 font-semibold px-5 lg:px-7 text-[14px] ${editMode ? 'hidden' : 'col-start-2'}` : 'hidden'} onClick={() => setEditMode(!editMode)}>
               <FontAwesomeIcon icon={faEdit} />
               Edit
             </button>
@@ -135,9 +139,9 @@ export default function GameDetailPage({ isCreate }) {
           </div>
         </div>
         <div className='py-10'>
-          <div className='grid grid-cols-1 lg:grid-cols-3 gap-4'>
+          <div className='grid grid-cols-1 gap-4 lg:grid-cols-3'>
             <Section title={'GAME IMAGE'}>
-              <div className='grid grid-cols-4'>
+              <div className='grid grid-cols-4 gap-3'>
                 <div className='col-span-2'>
                   <span className="label-text">Game Image</span>
                   <InputFile editMode={editMode} handleChangeImage={changeImage} image={images?.image ?? ''} name={'image'} className={'max-w-[123.5px] min-h-[162.5px] lg:max-w-[190px] lg:min-h-[250px]'} />

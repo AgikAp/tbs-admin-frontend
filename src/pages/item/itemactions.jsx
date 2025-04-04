@@ -5,7 +5,11 @@ import ItemActionBatchPricing from './itemactionbatchpricing'
 import ItemActionBatchSorting from './itemactionbatchsorting'
 import ItemActionSearchItem from './itemactionsearchitem'
 import { sortArrayByName, sortArrayByPrice } from '../../utils/sort'
+import { useSelector } from 'react-redux'
 export default function ItemActions({gameSelected, editMode, setEditMode, loading, openModalAndActionSearch, items, setItems, specialItems, setSpecialItems, sortBy, setSortBy, selectedAll, setSelectedAll, handleOnSubmit}) {
+  const state = useSelector((state) => state?.authLogin)
+  const { admin } = state.admin
+
   const actionAddToSpecialItems = () => {
     const itemSelected = items.filter(val => val?.selected === true)
 
@@ -62,7 +66,7 @@ export default function ItemActions({gameSelected, editMode, setEditMode, loadin
               <span className='font-bold text-[18px]'>Action Box {gameSelected.name}</span>
               <div>
                 <div className='grid grid-cols-1 lg:grid-cols-2 gap-4'>
-                  <button className={`btn bg-primary-2 hover:bg-primary-1 text-light-0 font-semibold px-5 lg:px-7 text-[14px] ${editMode ? 'hidden' : 'col-start-2'}`} onClick={() => setEditMode(!editMode)}>
+                  <button className={admin?.accesses?.includes('ITEM_ASSIGN') ? `btn bg-primary-2 hover:bg-primary-1 text-light-0 font-semibold px-5 lg:px-7 text-[14px] ${editMode ? 'hidden' : 'col-start-2'}` : 'hidden'} onClick={() => setEditMode(!editMode)}>
                     <FontAwesomeIcon icon={faEdit} />
                     Edit
                   </button>
