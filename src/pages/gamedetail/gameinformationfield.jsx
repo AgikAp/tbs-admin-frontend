@@ -1,53 +1,95 @@
-import React, { useEffect, useState } from 'react'
-import Section from '../../components/sections'
+import React, { useEffect, useState } from "react";
+import Section from "../../components/sections";
 
-export default function GameInformationField({payload, setPayload, editMode}) {
+export default function GameInformationField({
+  payload,
+  setPayload,
+  editMode,
+}) {
   const handleChange = (e) => {
-    setPayload({ ...payload, [e.target.name]: e.target.value })
-  }
+    setPayload({ ...payload, [e.target.name]: e.target.value });
+  };
 
   const handleChangeCheckbox = (e) => {
-    setPayload({ ...payload, [e.target.name]: e.target.checked })
-  }
+    setPayload({ ...payload, [e.target.name]: e.target.checked });
+  };
 
   return (
     <>
-      <Section title={'GAME INFORMATION'}>
-        <div className='grid grid-cols-1 gap-8'>
+      <Section title={"GAME INFORMATION"}>
+        <div className="grid grid-cols-1 gap-8">
           <div>
-            <label className="form-control min-w-full max-w-xs">
+            <label className="max-w-xs min-w-full form-control">
               <div className="label">
                 <span className="label-text">Name</span>
               </div>
-              <input type="text" className="input input-bordered min-w-full max-w-xs" name='name' value={payload?.name ?? ''} onChange={handleChange} disabled={!editMode} />
-
+              <input
+                type="text"
+                className="max-w-xs min-w-full input input-bordered"
+                name="name"
+                value={payload?.name ?? ""}
+                onChange={handleChange}
+                disabled={!editMode}
+              />
             </label>
-            <label className="form-control min-w-full max-w-xs">
+            <label className="max-w-xs min-w-full form-control">
               <div className="label">
                 <span className="label-text">Developer</span>
               </div>
-              <input type="text" className="input input-bordered min-w-full max-w-xs" name='developer' value={payload?.developer ?? ''} onChange={handleChange} disabled={!editMode} />
+              <input
+                type="text"
+                className="max-w-xs min-w-full input input-bordered"
+                name="developer"
+                value={payload?.developer ?? ""}
+                onChange={handleChange}
+                disabled={!editMode}
+              />
             </label>
-            <label className="form-control min-w-full max-w-xs">
+            <label className="max-w-xs min-w-full form-control">
               <div className="label">
                 <span className="label-text">Description</span>
               </div>
-              <textarea type="text" className="textarea textarea-bordered min-w-full max-w-xs" name='description' value={payload?.description ?? ''} onChange={handleChange} disabled={!editMode} />
+              <textarea
+                type="text"
+                className="max-w-xs min-w-full textarea textarea-bordered"
+                name="description"
+                value={payload?.description ?? ""}
+                onChange={handleChange}
+                disabled={!editMode}
+              />
             </label>
-            <div className="form-control w-fit my-4">
+            <div className="my-4 form-control w-fit">
               <div>
-                <label className="label cursor-pointer">
-                  <input type="checkbox" className="checkbox" value={payload?.status ?? ''} checked={payload?.status === 'active'} name='status' onChange={(e) => {
-                    e.target.checked ? e.target.value = 'active' : e.target.value = 'inactive'
-                    handleChange(e)
-                  }} disabled={!editMode} />
-                  <span className="label-text pl-5 mr-auto">Game Active</span>
+                <label className="cursor-pointer label">
+                  <input
+                    type="checkbox"
+                    className="checkbox"
+                    value={payload?.status ?? ""}
+                    checked={payload?.status === "active"}
+                    name="status"
+                    onChange={(e) => {
+                      e.target.checked
+                        ? (e.target.value = "active")
+                        : (e.target.value = "inactive");
+                      handleChange(e);
+                    }}
+                    disabled
+                  />
+                  <span className="pl-5 mr-auto label-text">Game Active</span>
                 </label>
               </div>
               <div>
-                <label className="label cursor-pointer">
-                  <input type="checkbox" className="checkbox" value={payload?.checking_nickname ?? ''} checked={payload?.checking_nickname ?? false} name='checking_nickname' onChange={handleChangeCheckbox} disabled={!editMode} />
-                  <span className="label-text pl-5">Check Nickname</span>
+                <label className="cursor-pointer label">
+                  <input
+                    type="checkbox"
+                    className="checkbox"
+                    value={payload?.checking_nickname ?? ""}
+                    checked={payload?.checking_nickname ?? false}
+                    name="checking_nickname"
+                    onChange={handleChangeCheckbox}
+                    disabled={!editMode}
+                  />
+                  <span className="pl-5 label-text">Check Nickname</span>
                 </label>
               </div>
             </div>
@@ -55,5 +97,5 @@ export default function GameInformationField({payload, setPayload, editMode}) {
         </div>
       </Section>
     </>
-  )
+  );
 }
