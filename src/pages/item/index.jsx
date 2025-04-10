@@ -16,12 +16,7 @@ import {
 import ItemActions from "./itemactions";
 import ItemCardExternal from "./itemcardexternal";
 import { POST_UploadImage } from "../../fetchs/image";
-import {
-  GET_Items,
-  GET_LoadVariant,
-  GET_SyncItem,
-  POST_AssignItem,
-} from "../../fetchs/item";
+import { GET_Items, GET_LoadVariant, POST_AssignItem } from "../../fetchs/item";
 import ItemCard from "./itencard";
 import { idrFormat } from "../../utils/currencyFormat";
 import ItemCardSpecial from "./itencardspecial";
