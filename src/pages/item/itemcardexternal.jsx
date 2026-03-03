@@ -54,19 +54,19 @@ export default function ItemCardExternal({
               level: "guest",
               type: "amount",
               margin: 0,
-              price: item.price.special,
+              price: item.price.value,
             },
             {
               level: "reseller",
               type: "amount",
               margin: 0,
-              price: item.price.special,
+              price: item.price.value,
             },
             {
               level: "special",
               type: "amount",
               margin: 0,
-              price: item.price.special,
+              price: item.price.value,
             },
           ],
         });
@@ -125,14 +125,12 @@ export default function ItemCardExternal({
       } else {
         tempItems = sortArrayByPrice(tempItems);
       }
-    } else {
-      console.log("ITEM INDEX DELETED", itemIndex);
-      if (itemIndex !== -1) {
-        tempItems.splice(itemIndex, 1);
-      }
+    } else if (itemIndex !== -1) {
+      tempItems.splice(itemIndex, 1);
     }
 
     isSpecial ? setSpecialItems(tempItems) : setItems(tempItems);
+    
   }, [selected]);
 
   return (

@@ -75,13 +75,6 @@ export default function ItemPage() {
     }
   }, [gameSelected]);
 
-  useEffect(() => {
-    console.log(items);
-  }, [items]);
-  useEffect(() => {
-    console.log("SPECIAL ITEMS ", specialItems);
-  }, [specialItems]);
-
   const handleChangeIndex = (i, val) => {
     setIndex(i);
     setGameSelected(val);
